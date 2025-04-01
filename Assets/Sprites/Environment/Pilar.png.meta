@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: dd9838045fbbb4b4c9c8c061f368a30c
+guid: 2b62232b3d403554e8b8f37e3e2b5a98
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -43,17 +43,17 @@ TextureImporter:
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
-  spriteMode: 2
+  spriteMode: 1
   spriteExtrude: 1
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
   spritePixelsToUnits: 32
-  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteBorder: {x: 9, y: 5, z: 8, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
   alphaIsTransparency: 1
-  spriteTessellationDetail: -1
+  spriteTessellationDetail: 0
   textureType: 8
   textureShape: 1
   singleChannelComponent: 0
@@ -123,24 +123,20 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Cuerda_0
+      name: NekoIdle_0
       rect:
         serializedVersion: 2
         x: 0
-        y: 0
+        y: 32
         width: 32
         height: 32
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
-      border: {x: 11, y: 5, z: 11, w: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
-      physicsShape:
-      - - {x: 5, y: -11}
-        - {x: 5, y: 16}
-        - {x: -5, y: 16}
-        - {x: -5, y: -11}
-      tessellationDetail: 0
+      physicsShape: []
+      tessellationDetail: -1
       bones: []
       spriteID: 52dee8078994c2e20800000000000000
       internalID: 3327115143792225573
@@ -149,7 +145,51 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Cuerda_1
+      name: NekoIdle_1
+      rect:
+        serializedVersion: 2
+        x: 32
+        y: 32
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f6e612078c52d9ae0800000000000000
+      internalID: -1541033954685915537
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NekoIdle_2
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e368accbccf46dc10800000000000000
+      internalID: 2077936018837374526
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NekoIdle_3
       rect:
         serializedVersion: 2
         x: 32
@@ -158,28 +198,28 @@ TextureImporter:
         height: 32
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
-      border: {x: 11, y: 0, z: 11, w: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
-      physicsShape:
-      - - {x: 5, y: 16}
-        - {x: -5, y: 16}
-        - {x: -5, y: -16}
-        - {x: 5, y: -16}
-      tessellationDetail: 0
+      physicsShape: []
+      tessellationDetail: -1
       bones: []
-      spriteID: 40d39eb926c27c24cbb5511fe04a1320
-      internalID: -1943806604
+      spriteID: ffdfbceef70a65810800000000000000
+      internalID: 1753765576235023871
       vertices: []
       indices: 
       edges: []
       weights: []
     outline: []
     customData: 
-    physicsShape: []
+    physicsShape:
+    - - {x: 8, y: 16}
+      - {x: -7, y: 16}
+      - {x: -7, y: -11}
+      - {x: 8, y: -11}
     bones: []
     spriteID: f2c97759f59d17b489d55b79dd3c5892
-    internalID: 0
+    internalID: 2011111385
     vertices: []
     indices: 
     edges: []
@@ -188,8 +228,10 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Cuerda_0: 3327115143792225573
-      Cuerda_1: -1943806604
+      NekoIdle_0: 3327115143792225573
+      NekoIdle_1: -1541033954685915537
+      NekoIdle_2: 2077936018837374526
+      NekoIdle_3: 1753765576235023871
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
