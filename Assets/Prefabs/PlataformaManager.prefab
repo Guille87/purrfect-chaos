@@ -157,7 +157,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   plataformaBasePrefab: {fileID: 5588321259765763778, guid: 72c7b3944a6c71c4f80ca91b0b8cc085, type: 3}
   plataformaExtensionPrefab: {fileID: 1602866013041373549, guid: 2969823f5771a7d48922b20d9928aebe, type: 3}
-  cantidadPlataformas: 3
+  extensionesIzquierda: 0
+  extensionesDerecha: 0
   distanciaPlataformas: 1
 --- !u!1001 &69183882373723286
 PrefabInstance:

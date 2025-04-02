@@ -200,7 +200,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   speed: 3
-  groundCheckDistance: 0.1
+  groundCheckDistance: 0.03
   groundLayer:
     serializedVersion: 2
     m_Bits: 128

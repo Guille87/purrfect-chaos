@@ -15,7 +15,7 @@ public class PlayerController : MonoBehaviour
     bool isTouchingRope = false;
     bool isGrounded = false;
 
-    public float groundCheckDistance = 0.2f;
+    public float groundCheckDistance = 0.03f;
     public LayerMask groundLayer;
 
     void Awake()
@@ -42,109 +42,140 @@ public class PlayerController : MonoBehaviour
     void FixedUpdate()
     {
         isGrounded = IsGrounded();
+
+        // Revisar constantemente si está tocando la cuerda
+        isTouchingRope = Physics2D.OverlapCircle(transform.position, 0.2f, LayerMask.GetMask("Rope"));
+
+        if (isTouchingRope && !isGrounded && !isClimbing)
+        {
+            StartClimbing();
+        }
+
         Move();
 
-        if (!isGrounded)
+        if (!isGrounded && !isClimbing)
         {
             ApplyGridSnap();
         }
+    }
+
+    void StartClimbing()
+    {
+        isClimbing = true;
+        rb.gravityScale = 0;
+        rb.linearVelocity = Vector2.zero;
+        AlignToNearestRope();
+        animator.SetBool("isClimbing", true);
     }
 
     void Move()
     {
         if (isDead) return;
 
-        // Si está en la cuerda, poder moverse verticalmente
+        // Actualizar si aún está tocando la cuerda
+        isTouchingRope = Physics2D.OverlapCircle(transform.position, 0.2f, LayerMask.GetMask("Rope"));
+        
+        // Movimiento en la cuerda
         if (isClimbing)
         {
-            rb.gravityScale = 0; // Desactivar gravedad al escalar
-            
+            rb.gravityScale = 0; // Desactivar gravedad
+
             if (moveInput.y != 0)
             {
                 rb.linearVelocity = new Vector2(0, moveInput.y * speed);
-                Debug.Log("Escalando: Movimiento vertical");
+                animator.SetBool("isClimbing", true);
+                animator.SetBool("isRunning", false);
+                animator.SetBool("isClimbingIdle", false);
+                AlignToNearestRope();
+            }
+            else if (moveInput.x != 0)
+            {
+                rb.linearVelocity = new Vector2(moveInput.x * speed, 0);
+                animator.SetBool("isRunning", true);
+                animator.SetBool("isClimbing", false);
+                animator.SetBool("isClimbingIdle", false);
             }
             else
             {
                 rb.linearVelocity = Vector2.zero;
-                rb.gravityScale = 0; // Mantener gravedad desactivada al estar quieto en la cuerda
-                Debug.Log("Escalando: Quieto en la cuerda");
-            }
-
-            // Activar animación de escalar
-            animator.SetBool("isClimbing", true);
-        }
-        else
-        {
-            animator.SetBool("isClimbing", false);
-            rb.gravityScale = 1;
-
-            // Movimiento horizontal solo si está en el suelo
-            if (isGrounded)
-            {
-                float horizontalInput = moveInput.x;
-
-                if (horizontalInput != 0)
-                {
-                    // Mover de 0.1 en 0.1 unidades
-                    float targetX = Mathf.Round(transform.position.x / 0.1f) * 0.1f + horizontalInput * 0.1f;
-                    transform.position = new Vector3(targetX, transform.position.y, transform.position.z);
-                    animator.SetBool("isRunning", true);
-                }
-                else
-                {
-                    animator.SetBool("isRunning", false);
-                }
-            }
-            else
-            {
-                // Si está en el aire, no permitir movimiento horizontal
-                rb.gravityScale = 1;
-                rb.linearVelocity = new Vector2(0, rb.linearVelocity.y);
-                // Detener la animación de correr si no se mueve horizontalmente
+                animator.SetBool("isClimbingIdle", true);
+                animator.SetBool("isClimbing", false);
                 animator.SetBool("isRunning", false);
             }
 
-            // Girar sprite según dirección
-            if (moveInput.x > 0)
+            // Si ya no está tocando la cuerda, salir de escalada
+            if (!isTouchingRope)
             {
-                transform.localScale = new Vector3(1, 1, 1);
-            }
-            else if (moveInput.x < 0)
-            {
-                transform.localScale = new Vector3(-1, 1, 1);
-            }
-            
-            if (rb.linearVelocity.y < 0)
-            {
+                isClimbing = false;
                 rb.gravityScale = 1;
+                Debug.Log("Salió de la cuerda");
             }
         }
-
-        // Si está tocando la cuerda y se mueve verticalmente, escalar
-        if (isTouchingRope)
+        // Si está tocando la cuerda pero aún no está escalando, permitirlo
+        else if (isTouchingRope && moveInput.y != 0)
         {
-            if (moveInput.y != 0)
+            isClimbing = true;
+            animator.SetBool("isClimbing", true);
+            rb.gravityScale = 0;
+            rb.linearVelocity = new Vector2(0, moveInput.y * speed);
+            // Aplicar alineación a la cuerda más cercana
+            AlignToNearestRope();
+        }
+        // Movimiento normal en el suelo
+        else if (isGrounded)
+        {
+            rb.gravityScale = 1;
+            animator.SetBool("isClimbing", false);
+            animator.SetBool("isClimbingIdle", false);
+
+            if (moveInput.x != 0)
             {
-                isClimbing = true;
-                animator.SetBool("isClimbing", true);
-                rb.gravityScale = 0;
-                rb.linearVelocity = new Vector2(0, moveInput.y * speed);
+                rb.linearVelocity = new Vector2(moveInput.x * speed, rb.linearVelocity.y);
+                animator.SetBool("isRunning", true);
             }
             else
             {
-                isClimbing = false;
-                animator.SetBool("isClimbing", false);
-                //rb.linearVelocity = new Vector2(moveInput.x * speed, 0);
+                rb.linearVelocity = new Vector2(0, rb.linearVelocity.y);
+                animator.SetBool("isRunning", false);
             }
         }
+        // Movimiento en el aire
         else
         {
-            // No está tocando la cuerda, hacer que el personaje vuelva al suelo o al aire
-            Debug.Log("No está tocando la cuerda, no se puede escalar.");
-            isClimbing = false;
-            animator.SetBool("isClimbing", false);
-            //rb.gravityScale = 1; // Activar gravedad al salir de la cuerda
+            rb.gravityScale = 1;
+
+            // Prohibir movimiento horizontal en el aire
+            rb.linearVelocity = new Vector2(0, rb.linearVelocity.y);
+
+            animator.SetBool("isRunning", false);
+        }
+
+        // Girar sprite según dirección
+        if (moveInput.x > 0)
+        {
+            transform.localScale = new Vector3(1, 1, 1);
+        }
+        else if (moveInput.x < 0)
+        {
+            transform.localScale = new Vector3(-1, 1, 1);
+        }
+    }
+
+    void AlignToNearestRope()
+    {
+        float gridSize = 1f; // Tamaño de la cuadrícula
+
+        // Buscar la cuerda más cercana dentro de un pequeño rango
+        Collider2D nearestRope = Physics2D.OverlapCircle(transform.position, 1f, LayerMask.GetMask("Rope"));
+
+        if (nearestRope != null)
+        {
+            // Ajustar la posición X al centro de la cuerda
+            transform.position = new Vector3(
+                Mathf.Round(nearestRope.transform.position.x / gridSize) * gridSize, 
+                transform.position.y, 
+                transform.position.z
+            );
         }
     }
 
