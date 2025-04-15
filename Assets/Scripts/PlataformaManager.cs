@@ -10,10 +10,11 @@ public class PlataformaManager : MonoBehaviour
     public int extensionesIzquierda = 2;  // Cantidad de plataformas a la izquierda
     public int extensionesDerecha = 2;    // Cantidad de plataformas a la derecha
     public float distanciaPlataformas = 1f;
+    public float deteccionCuerdaOffset = 0.7f; // Distancia vertical para detectar cuerdas debajo
 
     private void OnValidate()
     {
-        if (!Application.isPlaying && transform.childCount == 0)
+        if (!Application.isPlaying)
         {
             EditorApplication.delayCall += () => {
                 if (this != null)
@@ -32,6 +33,36 @@ public class PlataformaManager : MonoBehaviour
             GenerarPlataformasRuntime();
         }
     }
+
+    void Update()
+    {
+    #if UNITY_EDITOR
+        if (Application.isPlaying)
+        {
+            foreach (Transform child in transform)
+            {
+                Vector2 origen = new Vector2(child.position.x, child.position.y - deteccionCuerdaOffset);
+                DrawCircleInGameView(origen, 0.1f, Color.magenta);
+            }
+        }
+    #endif
+    }
+
+    #if UNITY_EDITOR
+    void DrawCircleInGameView(Vector2 center, float radius, Color color, int segments = 20)
+    {
+        float angle = 0f;
+        Vector3 lastPoint = center + new Vector2(Mathf.Cos(angle), Mathf.Sin(angle)) * radius;
+
+        for (int i = 1; i <= segments; i++)
+        {
+            angle += 2 * Mathf.PI / segments;
+            Vector3 nextPoint = center + new Vector2(Mathf.Cos(angle), Mathf.Sin(angle)) * radius;
+            Debug.DrawLine(lastPoint, nextPoint, color);
+            lastPoint = nextPoint;
+        }
+    }
+    #endif
 
     void GenerarPlataformasEditor()
     {
@@ -60,28 +91,18 @@ public class PlataformaManager : MonoBehaviour
 
     void CrearPlataformasEditor()
     {
-        // Crear la plataforma base en el centro
-        GameObject plataformaBase = Instantiate(plataformaBasePrefab);
-        plataformaBase.name = "PlataformaBase";
-        plataformaBase.transform.SetParent(transform, false);
-        plataformaBase.transform.localPosition = Vector3.zero;
+        CrearYConfigurarPlataforma(Vector3.zero, "PlataformaBase");
 
-        // Crear plataformas a la izquierda
         for (int i = 1; i <= extensionesIzquierda; i++)
         {
-            GameObject nuevaPlataforma = Instantiate(plataformaExtensionPrefab);
-            nuevaPlataforma.name = "PlataformaIzquierda_" + i;
-            nuevaPlataforma.transform.SetParent(transform, false);
-            nuevaPlataforma.transform.localPosition = new Vector3(-i * distanciaPlataformas, 0, 0);
+            Vector3 pos = new Vector3(-i * distanciaPlataformas, 0, 0);
+            CrearYConfigurarPlataforma(pos, "PlataformaIzquierda_" + i);
         }
 
-        // Crear plataformas a la derecha
         for (int i = 1; i <= extensionesDerecha; i++)
         {
-            GameObject nuevaPlataforma = Instantiate(plataformaExtensionPrefab);
-            nuevaPlataforma.name = "PlataformaDerecha_" + i;
-            nuevaPlataforma.transform.SetParent(transform, false);
-            nuevaPlataforma.transform.localPosition = new Vector3(i * distanciaPlataformas, 0, 0);
+            Vector3 pos = new Vector3(i * distanciaPlataformas, 0, 0);
+            CrearYConfigurarPlataforma(pos, "PlataformaDerecha_" + i);
         }
     }
 
@@ -92,25 +113,41 @@ public class PlataformaManager : MonoBehaviour
             Destroy(child.gameObject);
         }
 
-        // Crear la plataforma base en el centro
-        GameObject plataformaBase = Instantiate(plataformaBasePrefab, transform);
-        plataformaBase.name = "PlataformaBase";
-        plataformaBase.transform.localPosition = Vector3.zero;
+        CrearYConfigurarPlataforma(Vector3.zero, "PlataformaBase");
 
-        // Crear plataformas a la izquierda
         for (int i = 1; i <= extensionesIzquierda; i++)
         {
-            GameObject nuevaPlataforma = Instantiate(plataformaExtensionPrefab, transform);
-            nuevaPlataforma.name = "PlataformaIzquierda_" + i;
-            nuevaPlataforma.transform.localPosition = new Vector3(-i * distanciaPlataformas, 0, 0);
+            Vector3 pos = new Vector3(-i * distanciaPlataformas, 0, 0);
+            CrearYConfigurarPlataforma(pos, "PlataformaIzquierda_" + i);
         }
 
-        // Crear plataformas a la derecha
         for (int i = 1; i <= extensionesDerecha; i++)
         {
-            GameObject nuevaPlataforma = Instantiate(plataformaExtensionPrefab, transform);
-            nuevaPlataforma.name = "PlataformaDerecha_" + i;
-            nuevaPlataforma.transform.localPosition = new Vector3(i * distanciaPlataformas, 0, 0);
+            Vector3 pos = new Vector3(i * distanciaPlataformas, 0, 0);
+            CrearYConfigurarPlataforma(pos, "PlataformaDerecha_" + i);
         }
     }
+
+    void CrearYConfigurarPlataforma(Vector3 posicion, string nombre)
+    {
+        GameObject prefab = nombre == "PlataformaBase" ? plataformaBasePrefab : plataformaExtensionPrefab;
+        GameObject plataforma = Instantiate(prefab, transform);
+        plataforma.name = nombre;
+        plataforma.transform.localPosition = posicion;
+    }
+
+    #if UNITY_EDITOR
+    private void OnDrawGizmos()
+    {
+        if (!Application.isPlaying)
+        {
+            foreach (Transform child in transform)
+            {
+                Vector2 origen = new Vector2(child.position.x, child.position.y - deteccionCuerdaOffset);
+                Gizmos.color = Color.yellow;
+                Gizmos.DrawWireSphere(origen, 0.1f);
+            }
+        }
+    }
+    #endif
 }

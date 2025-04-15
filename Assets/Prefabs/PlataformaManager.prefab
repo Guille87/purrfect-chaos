@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 1884012391239019864}
   - component: {fileID: 6050582460282980114}
   - component: {fileID: 373726082423998132}
-  m_Layer: 7
+  m_Layer: 8
   m_Name: PlataformaManager
   m_TagString: Plataforma
   m_Icon: {fileID: 0}
@@ -160,6 +160,7 @@ MonoBehaviour:
   extensionesIzquierda: 0
   extensionesDerecha: 0
   distanciaPlataformas: 1
+  deteccionCuerdaOffset: 0.7
 --- !u!1001 &69183882373723286
 PrefabInstance:
   m_ObjectHideFlags: 0

@@ -10,6 +10,7 @@ public class PlayerController : MonoBehaviour
     PlayerInput playerInput;
 
     public float speed = 3f;
+    bool isAttacking = false;
     bool isClimbing = false;
     bool isDead = false;
     bool isTouchingRope = false;
@@ -57,6 +58,10 @@ public class PlayerController : MonoBehaviour
         {
             ApplyGridSnap();
         }
+        #if UNITY_EDITOR
+            Vector2 abajo = new Vector2(transform.position.x, transform.position.y - 0.7f);
+            Debug.DrawLine(transform.position, abajo, Color.cyan);
+        #endif
     }
 
     void StartClimbing()
@@ -70,7 +75,7 @@ public class PlayerController : MonoBehaviour
 
     void Move()
     {
-        if (isDead) return;
+        if (isDead || isAttacking) return;
 
         // Actualizar si aún está tocando la cuerda
         isTouchingRope = Physics2D.OverlapCircle(transform.position, 0.2f, LayerMask.GetMask("Rope"));
@@ -78,10 +83,28 @@ public class PlayerController : MonoBehaviour
         // Movimiento en la cuerda
         if (isClimbing)
         {
+            gameObject.layer = LayerMask.NameToLayer("PlayerClimbing");
             rb.gravityScale = 0; // Desactivar gravedad
 
             if (moveInput.y != 0)
             {
+                if (moveInput.y < 0)
+                {
+                    Vector2 abajo = new Vector2(transform.position.x, transform.position.y - 0.7f);
+                    Collider2D cuerdaDebajo = Physics2D.OverlapCircle(abajo, 0.2f, LayerMask.GetMask("Rope"));
+
+                    if (cuerdaDebajo == null)
+                    {
+                        // No hay cuerda debajo, no permitimos bajar más
+                        rb.linearVelocity = Vector2.zero;
+                        animator.SetBool("isClimbingIdle", true);
+                        animator.SetBool("isClimbing", false);
+                        animator.SetBool("isRunning", false);
+                        return;
+                    }
+                }
+                
+                gameObject.layer = LayerMask.NameToLayer("PlayerClimbing");
                 rb.linearVelocity = new Vector2(0, moveInput.y * speed);
                 animator.SetBool("isClimbing", true);
                 animator.SetBool("isRunning", false);
@@ -90,6 +113,7 @@ public class PlayerController : MonoBehaviour
             }
             else if (moveInput.x != 0)
             {
+                gameObject.layer = LayerMask.NameToLayer("Player");
                 rb.linearVelocity = new Vector2(moveInput.x * speed, 0);
                 animator.SetBool("isRunning", true);
                 animator.SetBool("isClimbing", false);
@@ -107,14 +131,15 @@ public class PlayerController : MonoBehaviour
             if (!isTouchingRope)
             {
                 isClimbing = false;
+                gameObject.layer = LayerMask.NameToLayer("Player");
                 rb.gravityScale = 1;
-                Debug.Log("Salió de la cuerda");
             }
         }
         // Si está tocando la cuerda pero aún no está escalando, permitirlo
         else if (isTouchingRope && moveInput.y != 0)
         {
             isClimbing = true;
+            gameObject.layer = LayerMask.NameToLayer("PlayerClimbing");
             animator.SetBool("isClimbing", true);
             rb.gravityScale = 0;
             rb.linearVelocity = new Vector2(0, moveInput.y * speed);
@@ -124,6 +149,25 @@ public class PlayerController : MonoBehaviour
         // Movimiento normal en el suelo
         else if (isGrounded)
         {
+            // Si está en el suelo y pulsa abajo, y hay una cuerda justo debajo, atravesar la plataforma
+            if (moveInput.y < 0)
+            {
+                Vector2 abajo = new Vector2(transform.position.x, transform.position.y - 0.7f);
+                Collider2D cuerdaDebajo = Physics2D.OverlapCircle(abajo, 0.2f, LayerMask.GetMask("Rope"));
+                if (cuerdaDebajo != null)
+                {
+                    Debug.Log("Cuerda detectada debajo. Atravesando plataforma.");
+                    // Bajamos al jugador para salir del suelo
+                    transform.position = new Vector3(transform.position.x, transform.position.y - 0.4f, transform.position.z);
+                    // Activamos el modo de escalada
+                    isClimbing = true;
+                    gameObject.layer = LayerMask.NameToLayer("PlayerClimbing");
+                    rb.gravityScale = 0;
+                    AlignToNearestRope();
+                    return; // Salimos de este bloque para que no se procese el resto como si estuviera en el suelo
+                }
+            }
+
             rb.gravityScale = 1;
             animator.SetBool("isClimbing", false);
             animator.SetBool("isClimbingIdle", false);
@@ -216,10 +260,17 @@ public class PlayerController : MonoBehaviour
 
     void OnAttack(InputAction.CallbackContext context)
     {
-        if (!isDead)
+        if (!isDead && !isAttacking && !isClimbing && isGrounded)
         {
+            isAttacking = true;
+            rb.linearVelocity = Vector2.zero;
             animator.SetTrigger("isAttacking");
         }
+    }
+
+    public void EndAttack()
+    {
+        isAttacking = false;
     }
 
     public void OnDeath()

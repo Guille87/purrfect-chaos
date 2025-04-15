@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 8811928366453802366}
   - component: {fileID: 4351789104913849383}
   - component: {fileID: -1319451278155432981}
-  m_Layer: 8
+  m_Layer: 9
   m_Name: CuerdaContinuacion
   m_TagString: Rope
   m_Icon: {fileID: 0}

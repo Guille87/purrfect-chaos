@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 4632013535706793415}
   - component: {fileID: 1594453649255472703}
   - component: {fileID: 6352556086743725957}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: CuerdaManager
   m_TagString: Rope
   m_Icon: {fileID: 0}
