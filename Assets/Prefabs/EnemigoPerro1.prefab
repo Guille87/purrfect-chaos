@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: -5005247278523165169}
   - component: {fileID: 1976644822247716032}
   - component: {fileID: 8937828069434765091}
+  - component: {fileID: -809527939325782418}
   m_Layer: 0
   m_Name: EnemigoPerro1
   m_TagString: Untagged
@@ -232,3 +233,17 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &-809527939325782418
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1218762426719645174}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 927c26f01d963324f8eb4d62e76c3e2e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  speed: 2
+  flipSprite: 0
