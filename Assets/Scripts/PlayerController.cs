@@ -76,9 +76,6 @@ public class PlayerController : MonoBehaviour
     void Move()
     {
         if (isDead || isAttacking) return;
-
-        // Actualizar si aún está tocando la cuerda
-        isTouchingRope = Physics2D.OverlapCircle(transform.position, 0.2f, LayerMask.GetMask("Rope"));
         
         // Movimiento en la cuerda
         if (isClimbing)
@@ -208,18 +205,42 @@ public class PlayerController : MonoBehaviour
     void AlignToNearestRope()
     {
         float gridSize = 1f; // Tamaño de la cuadrícula
+        float searchRadius = 1f;
+        float direction = Mathf.Sign(moveInput.x != 0 ? moveInput.x : transform.localScale.x);
 
-        // Buscar la cuerda más cercana dentro de un pequeño rango
-        Collider2D nearestRope = Physics2D.OverlapCircle(transform.position, 1f, LayerMask.GetMask("Rope"));
+        // Buscar todas las cuerdas cercanas
+        Collider2D[] ropes = Physics2D.OverlapCircleAll(transform.position, searchRadius, LayerMask.GetMask("Rope"));
 
-        if (nearestRope != null)
+        if (ropes.Length > 0)
         {
-            // Ajustar la posición X al centro de la cuerda
-            transform.position = new Vector3(
-                Mathf.Round(nearestRope.transform.position.x / gridSize) * gridSize, 
-                transform.position.y, 
-                transform.position.z
-            );
+            Collider2D bestRope = null;
+            float closestDistance = float.MaxValue;
+
+            foreach (var rope in ropes)
+            {
+                float deltaX = rope.transform.position.x - transform.position.x;
+
+                // Si estamos moviéndonos horizontalmente, solo considerar cuerdas en esa dirección
+                if (moveInput.x != 0 && Mathf.Sign(deltaX) != direction)
+                    continue;
+
+                float distance = Mathf.Abs(deltaX);
+                if (distance < closestDistance)
+                {
+                    closestDistance = distance;
+                    bestRope = rope;
+                }
+            }
+
+            // Si encontramos una cuerda válida, alinearse a ella
+            if (bestRope != null)
+            {
+                transform.position = new Vector3(
+                    Mathf.Round(bestRope.transform.position.x / gridSize) * gridSize,
+                    transform.position.y,
+                    transform.position.z
+                );
+            }
         }
     }
 
@@ -256,6 +277,26 @@ public class PlayerController : MonoBehaviour
     void OnMove(InputAction.CallbackContext context)
     {
         moveInput = context.ReadValue<Vector2>();
+
+        Vector2 lockedDirection = Vector2.zero;
+
+        if (context.performed)
+        {
+            if (lockedDirection == Vector2.zero && moveInput != Vector2.zero)
+            {
+                // Bloqueamos solo una dirección, vertical o horizontal
+                if (Mathf.Abs(moveInput.x) > Mathf.Abs(moveInput.y))
+                    lockedDirection = new Vector2(Mathf.Sign(moveInput.x), 0); // Solo izquierda/derecha
+                else
+                    lockedDirection = new Vector2(0, Mathf.Sign(moveInput.y)); // Solo arriba/abajo
+            }
+        }
+        else if (context.canceled)
+        {
+            lockedDirection = Vector2.zero; // Se libera el control
+        }
+
+        moveInput = lockedDirection;
     }
 
     void OnAttack(InputAction.CallbackContext context)
