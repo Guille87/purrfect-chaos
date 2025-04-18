@@ -34,36 +34,6 @@ public class PlataformaManager : MonoBehaviour
         }
     }
 
-    void Update()
-    {
-    #if UNITY_EDITOR
-        if (Application.isPlaying)
-        {
-            foreach (Transform child in transform)
-            {
-                Vector2 origen = new Vector2(child.position.x, child.position.y - deteccionCuerdaOffset);
-                DrawCircleInGameView(origen, 0.1f, Color.magenta);
-            }
-        }
-    #endif
-    }
-
-    #if UNITY_EDITOR
-    void DrawCircleInGameView(Vector2 center, float radius, Color color, int segments = 20)
-    {
-        float angle = 0f;
-        Vector3 lastPoint = center + new Vector2(Mathf.Cos(angle), Mathf.Sin(angle)) * radius;
-
-        for (int i = 1; i <= segments; i++)
-        {
-            angle += 2 * Mathf.PI / segments;
-            Vector3 nextPoint = center + new Vector2(Mathf.Cos(angle), Mathf.Sin(angle)) * radius;
-            Debug.DrawLine(lastPoint, nextPoint, color);
-            lastPoint = nextPoint;
-        }
-    }
-    #endif
-
     void GenerarPlataformasEditor()
     {
         if (Application.isPlaying) return; // Evita cambios en runtime
@@ -135,19 +105,4 @@ public class PlataformaManager : MonoBehaviour
         plataforma.name = nombre;
         plataforma.transform.localPosition = posicion;
     }
-
-    #if UNITY_EDITOR
-    private void OnDrawGizmos()
-    {
-        if (!Application.isPlaying)
-        {
-            foreach (Transform child in transform)
-            {
-                Vector2 origen = new Vector2(child.position.x, child.position.y - deteccionCuerdaOffset);
-                Gizmos.color = Color.yellow;
-                Gizmos.DrawWireSphere(origen, 0.1f);
-            }
-        }
-    }
-    #endif
 }

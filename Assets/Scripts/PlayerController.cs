@@ -153,7 +153,6 @@ public class PlayerController : MonoBehaviour
                 Collider2D cuerdaDebajo = Physics2D.OverlapCircle(abajo, 0.2f, LayerMask.GetMask("Rope"));
                 if (cuerdaDebajo != null)
                 {
-                    Debug.Log("Cuerda detectada debajo. Atravesando plataforma.");
                     // Bajamos al jugador para salir del suelo
                     transform.position = new Vector3(transform.position.x, transform.position.y - 0.4f, transform.position.z);
                     // Activamos el modo de escalada
