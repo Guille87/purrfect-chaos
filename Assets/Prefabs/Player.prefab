@@ -205,11 +205,13 @@ MonoBehaviour:
   groundLayer:
     serializedVersion: 2
     m_Bits: 1280
-  attackBoxSize: {x: 0.5, y: 1}
-  attackBoxOffset: {x: 0, y: -0.25}
+  attackBoxSize: {x: 0.6, y: 0.6}
   pillarLayer:
     serializedVersion: 2
     m_Bits: 8192
+  breakableLayer:
+    serializedVersion: 2
+    m_Bits: 16384
 --- !u!114 &3401730292564412332
 MonoBehaviour:
   m_ObjectHideFlags: 0

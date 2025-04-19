@@ -18,9 +18,9 @@ public class PlayerController : MonoBehaviour
 
     public float groundCheckDistance = 0.03f;
     public LayerMask groundLayer;
-    public Vector2 attackBoxSize = new Vector2(0.5f, 1f); // Ancho pequeño, alto medio
-    public Vector2 attackBoxOffset = new Vector2(0f, -0.25f); // Centrada verticalmente, un pelín abajo
+    public Vector2 attackBoxSize = new Vector2(0.6f, 0.6f);
     public LayerMask pillarLayer;
+    public LayerMask breakableLayer;
 
     void Awake()
     {
@@ -304,16 +304,27 @@ public class PlayerController : MonoBehaviour
             isAttacking = true;
             rb.linearVelocity = Vector2.zero;
             animator.SetTrigger("isAttacking");
-
-            Vector2 attackPosition = (Vector2)transform.position + attackBoxOffset;
-            Collider2D[] hitObjects = Physics2D.OverlapBoxAll(attackPosition, attackBoxSize, 0f, pillarLayer);
-
+            
+            // Golpea los pilares
+            Collider2D[] hitObjects = Physics2D.OverlapBoxAll(transform.position, attackBoxSize, 0f, pillarLayer);
             foreach (Collider2D hit in hitObjects)
             {
                 PilarController pilar = hit.GetComponent<PilarController>();
                 if (pilar != null)
                 {
                     pilar.Romper();
+                }
+            }
+
+            // Golpea los vasos
+            Collider2D[] vasos = Physics2D.OverlapBoxAll(transform.position, attackBoxSize, 0f, breakableLayer);
+
+            foreach (Collider2D hit in vasos)
+            {
+                VasoController vaso = hit.GetComponent<VasoController>();
+                if (vaso != null)
+                {
+                    vaso.Golpear();
                 }
             }
         }
@@ -345,12 +356,5 @@ public class PlayerController : MonoBehaviour
         {
             isTouchingRope = false;
         }
-    }
-
-    void OnDrawGizmosSelected()
-    {
-        Gizmos.color = Color.red;
-        Vector2 attackPosition = (Vector2)transform.position + attackBoxOffset;
-        Gizmos.DrawWireCube(attackPosition, attackBoxSize);
     }
 }

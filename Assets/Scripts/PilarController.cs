@@ -25,8 +25,6 @@ public class PilarController : MonoBehaviour
 
         foreach (RaycastHit2D hit in hits)
         {
-            Debug.Log("Hit: " + hit.collider.name + " en capa: " + LayerMask.LayerToName(hit.collider.gameObject.layer));
-
             if (hit.collider.gameObject.layer == LayerMask.NameToLayer("Plataforma"))
             {
                 // Buscar en hijos del objeto golpeado alguno que tenga el script PlataformaPart

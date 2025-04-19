@@ -7,6 +7,8 @@ public class ContenedorController : MonoBehaviour
     private float tiempoCaida = 0.25f;  // Tiempo total para la caída
     private float distanciaCaida = 1f;  // Distancia que se mueve en cada caída
 
+    public bool SeEstaCayendo { get; private set; } = false;
+
     private void Awake()
     {
         animator = GetComponent<Animator>();
@@ -22,6 +24,8 @@ public class ContenedorController : MonoBehaviour
     {
         yield return new WaitForSeconds(0.5f);  // Espera un poco antes de iniciar la caída
 
+        SeEstaCayendo = true;  // Marcamos que el contenedor se está cayendo
+
         float tiempoPorFrame = tiempoCaida / 5f;  // Dividimos el tiempo entre los 5 fotogramas
         animator.speed = 0.2f / tiempoPorFrame;  // Ajustamos la velocidad de la animación para que se sincronicen con la caída
 
@@ -32,5 +36,12 @@ public class ContenedorController : MonoBehaviour
         }
 
         animator.speed = 5f;  // Restauramos la velocidad de la animación a su valor original después de la caída
+        SeEstaCayendo = false;  // Marcamos que el contenedor ya no se está cayendo
+    }
+
+    public void Atrapar(GameObject objetivo)
+    {
+        // Aquí decides si quieres destruir o desactivar
+        Destroy(objetivo);
     }
 }
