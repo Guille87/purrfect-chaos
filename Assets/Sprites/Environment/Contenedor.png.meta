@@ -127,19 +127,19 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 0
-        y: 0
+        y: 6
         width: 32
-        height: 32
+        height: 23
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
-      border: {x: 1, y: 5, z: 1, w: 4}
+      border: {x: 1, y: 0, z: 1, w: 0}
       customData: 
       outline: []
       physicsShape:
       - - {x: 15, y: 2}
-        - {x: 15, y: 14}
-        - {x: 3, y: 14}
-        - {x: -15, y: 14}
+        - {x: 15, y: 11.5}
+        - {x: 3, y: 11.5}
+        - {x: -15, y: 11.5}
         - {x: -15, y: -8}
         - {x: -15, y: -11}
         - {x: 15, y: -11}
@@ -155,13 +155,13 @@ TextureImporter:
       name: Contenedor_1
       rect:
         serializedVersion: 2
-        x: 32
-        y: 0
-        width: 32
-        height: 32
+        x: 34
+        y: 2
+        width: 30
+        height: 30
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
-      border: {x: 2, y: 2, z: 0, w: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape:
@@ -187,13 +187,13 @@ TextureImporter:
       name: Contenedor_2
       rect:
         serializedVersion: 2
-        x: 64
-        y: 0
-        width: 32
-        height: 32
+        x: 69
+        y: 2
+        width: 26
+        height: 28
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
-      border: {x: 5, y: 2, z: 1, w: 2}
+      border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape:
@@ -213,13 +213,13 @@ TextureImporter:
       name: Contenedor_3
       rect:
         serializedVersion: 2
-        x: 96
-        y: 0
-        width: 32
-        height: 32
+        x: 98
+        y: 1
+        width: 30
+        height: 29
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
-      border: {x: 2, y: 1, z: 0, w: 2}
+      border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape:
@@ -244,19 +244,19 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 128
-        y: 0
+        y: 5
         width: 32
-        height: 32
+        height: 19
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 8}
+      border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape:
-      - - {x: 14, y: 8}
-        - {x: -14, y: 8}
-        - {x: -14, y: -11}
-        - {x: 14, y: -11}
+      - - {x: 14, y: 9.5}
+        - {x: -14, y: 9.5}
+        - {x: -14, y: -9.5}
+        - {x: 14, y: -9.5}
       tessellationDetail: 0
       bones: []
       spriteID: 9e82eb95ab0ac61429b273bf3de442f2

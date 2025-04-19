@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 8123412339728684503}
   - component: {fileID: 6584301610024802997}
   - component: {fileID: 5683981227029662185}
+  - component: {fileID: -5654615719315918711}
   m_Layer: 8
   m_Name: PlataformaExtension
   m_TagString: Plataforma
@@ -139,3 +140,15 @@ PolygonCollider2D:
       - {x: -0.5, y: -0.5}
       - {x: 0.5, y: -0.5}
   m_UseDelaunayMesh: 0
+--- !u!114 &-5654615719315918711
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1602866013041373549}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6e3fe7b1cbc2c754e8092885d2e9f363, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
