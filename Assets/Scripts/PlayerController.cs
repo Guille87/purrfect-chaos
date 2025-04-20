@@ -1,6 +1,7 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 
 public class PlayerController : MonoBehaviour
 {
@@ -21,12 +22,27 @@ public class PlayerController : MonoBehaviour
     public Vector2 attackBoxSize = new Vector2(0.6f, 0.6f);
     public LayerMask pillarLayer;
     public LayerMask breakableLayer;
+    public bool IsDead => isDead;
+    bool hasBeenHit = false;
 
     void Awake()
     {
         animator = GetComponent<Animator>();
         rb = GetComponent<Rigidbody2D>();
         playerInput = GetComponent<PlayerInput>();
+    }
+
+    void Start()
+    {
+        StartCoroutine(WaitForIntro());
+    }
+
+    private IEnumerator WaitForIntro()
+    {
+        Time.timeScale = 0f;
+        yield return new WaitForSecondsRealtime(3f);
+        Time.timeScale = 1f;
+
     }
 
     void OnEnable()
@@ -45,6 +61,8 @@ public class PlayerController : MonoBehaviour
 
     void FixedUpdate()
     {
+        if (isDead || isAttacking) return;
+        
         isGrounded = IsGrounded();
 
         // Revisar constantemente si está tocando la cuerda
@@ -74,8 +92,6 @@ public class PlayerController : MonoBehaviour
 
     void Move()
     {
-        if (isDead || isAttacking) return;
-        
         // Movimiento en la cuerda
         if (isClimbing)
         {
@@ -338,12 +354,43 @@ public class PlayerController : MonoBehaviour
     public void OnDeath()
     {
         isDead = true;
+        gameObject.layer = LayerMask.NameToLayer("Dead");
+        // Desactivar colisiones
+        foreach (var col in GetComponents<Collider2D>())
+        {
+            col.enabled = false;
+        }
+        playerInput.enabled = false; // Desactivar el PlayerInput
         animator.SetBool("isDead", true);
         rb.linearVelocity = Vector2.zero;
+        
+        StartCoroutine(DeathSequence());
+    }
+
+    private IEnumerator DeathSequence()
+    {
+        // Hacer que el jugador salte un poco hacia arriba
+        rb.AddForce(Vector2.up * 5f, ForceMode2D.Impulse);
+        
+        // Deshabilitar las colisiones con otros objetos
+        Collider2D col = GetComponent<Collider2D>();
+        col.enabled = false;
+
+        // Esperar 4 segundos
+        yield return new WaitForSeconds(4f);
+
+        // Restaurar la escena
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 
     void OnTriggerEnter2D(Collider2D collision)
     {
+        if (!hasBeenHit && collision.CompareTag("Enemy"))
+        {
+            hasBeenHit = true;
+            OnDeath();
+        }
+
         if (collision.CompareTag("Rope"))
         {
             isTouchingRope = true;

@@ -212,7 +212,11 @@ public class EnemyController : MonoBehaviour
 
         if (other.CompareTag("Player"))
         {
-            Debug.Log("¡Jugador tocado! Pierde una vida.");
+            PlayerController playerController = other.GetComponent<PlayerController>();
+            if (playerController != null && !playerController.IsDead)
+            {
+                playerController.OnDeath();
+            }
         }
     }
 
