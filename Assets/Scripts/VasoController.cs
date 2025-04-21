@@ -27,6 +27,7 @@ public class VasoController : MonoBehaviour
         {
             case TipoVaso.Vaso1:
                 Romper();
+                GameManager.Instance.SumarPuntos(100);
                 break;
 
             case TipoVaso.Vaso2:
@@ -37,6 +38,7 @@ public class VasoController : MonoBehaviour
                 else
                 {
                     Romper();
+                    GameManager.Instance.SumarPuntos(200);
                 }
                 break;
 
@@ -52,6 +54,7 @@ public class VasoController : MonoBehaviour
                 else
                 {
                     Romper();
+                    GameManager.Instance.SumarPuntos(300);
                 }
                 break;
         }

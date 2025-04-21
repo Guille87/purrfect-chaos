@@ -1,7 +1,6 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.SceneManagement;
 
 public class PlayerController : MonoBehaviour
 {
@@ -363,6 +362,10 @@ public class PlayerController : MonoBehaviour
         playerInput.enabled = false; // Desactivar el PlayerInput
         animator.SetBool("isDead", true);
         rb.linearVelocity = Vector2.zero;
+        rb.gravityScale = 1; // Activar gravedad al morir
+
+        // Restar vida en el GameManager
+        GameManager.Instance.PerderVida();
         
         StartCoroutine(DeathSequence());
     }
@@ -379,8 +382,16 @@ public class PlayerController : MonoBehaviour
         // Esperar 4 segundos
         yield return new WaitForSeconds(4f);
 
-        // Restaurar la escena
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        if (GameManager.Instance.Vidas <= 0)
+        {
+            // Si el jugador no tiene vidas, mostrar Game Over
+            GameManager.Instance.GameOver();
+        }
+        else
+        {
+            // Si el jugador tiene vidas, reiniciar el juego
+            GameManager.Instance.ReiniciarJuego();
+        }
     }
 
     void OnTriggerEnter2D(Collider2D collision)
@@ -388,7 +399,11 @@ public class PlayerController : MonoBehaviour
         if (!hasBeenHit && collision.CompareTag("Enemy"))
         {
             hasBeenHit = true;
-            OnDeath();
+            // Llamamos a OnDeath solo si el jugador no está muerto
+            if (!isDead)
+            {
+                OnDeath();
+            }
         }
 
         if (collision.CompareTag("Rope"))
