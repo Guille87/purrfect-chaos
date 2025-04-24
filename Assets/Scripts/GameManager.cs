@@ -8,8 +8,8 @@ public class GameManager : MonoBehaviour
     public static GameManager Instance;
 
     [Header("UI")]
-    public TMP_Text vidasText;
-    public TMP_Text puntosText;
+    public TextMeshProUGUI vidasText;
+    public TextMeshProUGUI puntosText;
     public GameObject gameOverPanel;
 
     [Header("Gameplay")]
@@ -45,8 +45,8 @@ public class GameManager : MonoBehaviour
         if (escenasJugables.Contains(scene.name))
         {
             // Reasigna referencias a los textos
-            vidasText = GameObject.Find("TextVidas")?.GetComponent<TMP_Text>();
-            puntosText = GameObject.Find("TextPuntos")?.GetComponent<TMP_Text>();
+            vidasText = GameObject.Find("TextVidas")?.GetComponent<TextMeshProUGUI>();
+            puntosText = GameObject.Find("TextPuntos")?.GetComponent<TextMeshProUGUI>();
 
             // Busca el panel de Game Over
             gameOverPanel = GameObject.Find("GameOverPanel");
