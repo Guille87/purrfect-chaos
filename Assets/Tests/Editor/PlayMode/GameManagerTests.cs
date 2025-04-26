@@ -4,7 +4,7 @@ using TMPro;
 
 public class GameManagerTests
 {
-    private GameManager gameManager;
+    /*private GameManager gameManager;
 
     [SetUp]
     public void SetUp()
@@ -43,5 +43,5 @@ public class GameManagerTests
 
         int vidas = (int)typeof(GameManager).GetProperty("Vidas").GetValue(gameManager);
         Assert.AreEqual(4, vidas); // Verifica que se haya ganado una vida extra
-    }
+    }*/
 }

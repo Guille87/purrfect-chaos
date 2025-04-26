@@ -11,6 +11,7 @@ public class GameManager : MonoBehaviour
     public TextMeshProUGUI vidasText;
     public TextMeshProUGUI puntosText;
     public GameObject gameOverPanel;
+    public UIController uiController;
 
     [Header("Gameplay")]
     public int vidasIniciales = 3;
@@ -51,6 +52,9 @@ public class GameManager : MonoBehaviour
             // Busca el panel de Game Over
             gameOverPanel = GameObject.Find("GameOverPanel");
 
+            // Busca el controlador de UI
+            uiController = GameObject.Find("MenuManager")?.GetComponent<UIController>();
+
             OcultarGameOverPanel();
 
             ActualizarUI();
@@ -67,6 +71,17 @@ public class GameManager : MonoBehaviour
         // Cargar las vidas y puntos guardados o establecer valores iniciales
         vidas = PlayerPrefs.GetInt("Vidas", vidasIniciales);
         puntos = PlayerPrefs.GetInt("Puntos", 0);
+
+        // Si no tienes vidas, reiniciar a vidasIniciales
+        if (vidas <= 0)
+        {
+            vidas = vidasIniciales;
+            puntos = 0;
+            PlayerPrefs.SetInt("Vidas", vidas);
+            PlayerPrefs.SetInt("Puntos", puntos);
+            PlayerPrefs.Save();
+        }
+        
         proximaVidaExtra = puntuacionVidaExtra;
 
         ActualizarUI();
@@ -103,6 +118,12 @@ public class GameManager : MonoBehaviour
     {
         vidasText.text = "Vidas: " + vidas;
         puntosText.text = "Puntos: " + puntos;
+    }
+
+    public void IniciarNuevaPartida()
+    {
+        vidas = 3;
+        puntos = 0;
     }
 
     public void ReiniciarJuego()

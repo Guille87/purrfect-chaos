@@ -49,6 +49,7 @@ public class PlayerController : MonoBehaviour
         playerInput.actions["Move"].performed += OnMove;
         playerInput.actions["Move"].canceled += OnMove;
         playerInput.actions["Attack"].performed += OnAttack;
+        playerInput.actions["Pause"].performed += OnPause;
     }
 
     void OnDisable()
@@ -56,6 +57,7 @@ public class PlayerController : MonoBehaviour
         playerInput.actions["Move"].performed -= OnMove;
         playerInput.actions["Move"].canceled -= OnMove;
         playerInput.actions["Attack"].performed -= OnAttack;
+        playerInput.actions["Pause"].performed -= OnPause;
     }
 
     void FixedUpdate()
@@ -310,6 +312,12 @@ public class PlayerController : MonoBehaviour
         }
 
         moveInput = lockedDirection;
+    }
+
+    void OnPause(InputAction.CallbackContext context)
+    {
+        // Lógica de pausa: activar un panel de pausa y cambiar el timescale
+        Debug.Log("Pausa activada");
     }
 
     void OnAttack(InputAction.CallbackContext context)

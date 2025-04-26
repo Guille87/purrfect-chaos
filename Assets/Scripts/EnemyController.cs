@@ -128,7 +128,6 @@ public class EnemyController : MonoBehaviour
 
         if (hit.collider && Mathf.Abs(hit.collider.transform.position.x - transform.position.x) < 0.05f)
         {
-            Debug.Log("Cuerda detectada debajo y alineada. Iniciando bajada.");
             isClimbing = true;
             gameObject.layer = ignorePlatformLayer;
             rb.gravityScale = 0f;

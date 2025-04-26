@@ -16,12 +16,14 @@ public class PlataformaManager : MonoBehaviour
     {
         if (!Application.isPlaying)
         {
+            #if UNITY_EDITOR
             EditorApplication.delayCall += () => {
                 if (this != null)
                 {
                     GenerarPlataformasEditor();
                 }
             };
+            #endif
         }
     }
 
@@ -34,6 +36,7 @@ public class PlataformaManager : MonoBehaviour
         }
     }
 
+#if UNITY_EDITOR
     void GenerarPlataformasEditor()
     {
         if (Application.isPlaying) return; // Evita cambios en runtime
@@ -75,6 +78,7 @@ public class PlataformaManager : MonoBehaviour
             CrearYConfigurarPlataforma(pos, "PlataformaDerecha_" + i);
         }
     }
+#endif
 
     void GenerarPlataformasRuntime()
     {

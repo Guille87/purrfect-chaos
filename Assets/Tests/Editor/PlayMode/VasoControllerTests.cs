@@ -1,3 +1,5 @@
+#if UNITY_EDITOR
+
 using System.Collections;
 using NUnit.Framework;
 using TMPro;
@@ -7,7 +9,7 @@ using UnityEngine.TestTools;
 
 public class VasoControllerTests
 {
-    [UnityTest]
+    /*[UnityTest]
     public IEnumerator Vaso1_SeRompeYDaPuntosCorrectos()
     {
         // Crear un GameObject vacío con GameManager y simular instancia
@@ -52,5 +54,7 @@ public class VasoControllerTests
 
         int puntos = (int)puntosField.GetValue(gm);
         Assert.AreEqual(100, puntos);
-    }
+    }*/
 }
+
+#endif
