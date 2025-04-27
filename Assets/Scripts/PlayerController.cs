@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -18,7 +19,7 @@ public class PlayerController : MonoBehaviour
 
     public float groundCheckDistance = 0.03f;
     public LayerMask groundLayer;
-    public Vector2 attackBoxSize = new Vector2(0.6f, 0.6f);
+    public Vector2 attackBoxSize = new Vector2(0.4f, 0.6f);
     public LayerMask pillarLayer;
     public LayerMask breakableLayer;
     public bool IsDead => isDead;
@@ -327,28 +328,36 @@ public class PlayerController : MonoBehaviour
             isAttacking = true;
             rb.linearVelocity = Vector2.zero;
             animator.SetTrigger("isAttacking");
-            
-            // Golpea los pilares
-            Collider2D[] hitObjects = Physics2D.OverlapBoxAll(transform.position, attackBoxSize, 0f, pillarLayer);
-            foreach (Collider2D hit in hitObjects)
+        }
+    }
+
+    public void PerformAttack()
+    {
+        // Golpea los pilares
+        Collider2D[] hitPilares = Physics2D.OverlapBoxAll(transform.position, attackBoxSize, 0f, pillarLayer);
+        // Golpea los vasos
+        Collider2D[] hitVasos = Physics2D.OverlapBoxAll(transform.position, attackBoxSize, 0f, breakableLayer);
+
+        if (hitPilares.Length > 0 || hitVasos.Length > 0)
+        {
+            // Combina los dos arrays de objetos detectados (vasos y pilares)
+            var allHits = hitPilares.Cast<Collider2D>().Concat(hitVasos).ToArray();
+
+            // Ordenar todos los objetos detectados por la distancia al jugador
+            Collider2D closestObject = allHits.OrderBy(o => Vector2.Distance(transform.position, o.transform.position)).First();
+
+            // Verificar si es un pilar o un vaso y ejecutar la acción correspondiente
+            PilarController pilar = closestObject.GetComponent<PilarController>();
+            if (pilar != null)
             {
-                PilarController pilar = hit.GetComponent<PilarController>();
-                if (pilar != null)
-                {
-                    pilar.Romper();
-                }
+                pilar.Romper();
+                return; // Si se golpeó un pilar, ya no buscamos más.
             }
 
-            // Golpea los vasos
-            Collider2D[] vasos = Physics2D.OverlapBoxAll(transform.position, attackBoxSize, 0f, breakableLayer);
-
-            foreach (Collider2D hit in vasos)
+            VasoController vaso = closestObject.GetComponent<VasoController>();
+            if (vaso != null)
             {
-                VasoController vaso = hit.GetComponent<VasoController>();
-                if (vaso != null)
-                {
-                    vaso.Golpear();
-                }
+                vaso.Golpear();
             }
         }
     }
