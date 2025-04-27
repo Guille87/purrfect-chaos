@@ -66,6 +66,7 @@ public class VasoController : MonoBehaviour
         {
             animator.enabled = true; // Activamos el animator para la animación de romper
             animator.SetTrigger("Romper");
+            GameManager.Instance.VasoRoto(this);
             Destroy(gameObject, 0.3f);
         }
     }

@@ -41,7 +41,7 @@ public class ContenedorController : MonoBehaviour
 
     public void Atrapar(GameObject objetivo)
     {
-        // Aquí decides si quieres destruir o desactivar
-        Destroy(objetivo);
+        // Desactivamos el objeto atrapado
+        objetivo.SetActive(false);
     }
 }

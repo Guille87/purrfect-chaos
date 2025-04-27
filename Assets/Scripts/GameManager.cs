@@ -19,6 +19,7 @@ public class GameManager : MonoBehaviour
     public int maxVidas = 9;
 
     [SerializeField] private List<string> escenasJugables;
+    private List<VasoController> vasosEnNivel = new List<VasoController>();
 
     private int vidas;
     private int puntos;
@@ -54,6 +55,9 @@ public class GameManager : MonoBehaviour
 
             // Busca el controlador de UI
             uiController = GameObject.Find("MenuManager")?.GetComponent<UIController>();
+
+            vasosEnNivel.Clear();
+            vasosEnNivel.AddRange(FindObjectsByType<VasoController>(FindObjectsSortMode.None));
 
             OcultarGameOverPanel();
 
@@ -118,6 +122,49 @@ public class GameManager : MonoBehaviour
     {
         vidasText.text = "Vidas: " + vidas;
         puntosText.text = "Puntos: " + puntos;
+    }
+
+    public void VasoRoto(VasoController vaso)
+    {
+        // Asegurarnos de que la lista está actualizada
+        if (!vasosEnNivel.Contains(vaso))
+        {
+            vasosEnNivel.Clear();
+            vasosEnNivel.AddRange(FindObjectsByType<VasoController>(FindObjectsSortMode.None));
+        }
+        
+        vasosEnNivel.Remove(vaso);
+
+        if (vasosEnNivel.Count == 0)
+        {
+            PasarAlSiguienteNivel();
+        }
+    }
+
+    private void PasarAlSiguienteNivel()
+    {
+        int escenaActualIndex = SceneManager.GetActiveScene().buildIndex;
+        int siguienteEscenaIndex = escenaActualIndex + 1;
+
+        if (siguienteEscenaIndex < SceneManager.sceneCountInBuildSettings)
+        {
+            string siguienteEscenaName = System.IO.Path.GetFileNameWithoutExtension(SceneUtility.GetScenePathByBuildIndex(siguienteEscenaIndex));
+            Debug.Log("Cargando siguiente escena: " + siguienteEscenaName);
+            SceneTransition fader = FindFirstObjectByType<SceneTransition>();
+            if (fader != null)
+            {
+                fader.TransitionToScene(siguienteEscenaName);
+            }
+        }
+        else
+        {
+            Debug.Log("¡Has completado todos los niveles!");
+            SceneTransition fader = FindFirstObjectByType<SceneTransition>();
+            if (fader != null)
+            {
+                fader.TransitionToScene("GameCompleted");
+            }
+        }
     }
 
     public void IniciarNuevaPartida()
