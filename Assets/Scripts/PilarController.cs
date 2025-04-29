@@ -1,6 +1,7 @@
 using System.Collections;
 using UnityEngine;
 
+[ExecuteInEditMode] // Permite que el script se ejecute en el modo de edición en Unity
 public class PilarController : MonoBehaviour
 {
     private Animator animator;
@@ -82,6 +83,36 @@ public class PilarController : MonoBehaviour
         {
             Debug.DrawLine(origen, origen + Vector3.up * distancia, Color.red, 5f); // Nada encima
         }
+
+        // Verificar si hay un pilar encima en modo edición
+        if (Application.isEditor && !Application.isPlaying)
+        {
+            VerificarPilarEncima();
+        }
+    }
+
+    private void VerificarPilarEncima()
+    {
+        // Verificar si hay otro pilar en la misma posición (arriba del actual)
+        Collider2D[] coliders = Physics2D.OverlapCircleAll(transform.position + Vector3.up * 1.0f, 0.2f, LayerMask.GetMask("Pilar"));
+        
+        if (coliders.Length > 0)
+        {
+            // Si hay un pilar encima, mostramos un aviso en el editor
+            Debug.LogWarning("¡No se puede colocar un pilar aquí! Ya hay un pilar encima.", this);
+        }
+    }
+    
+    private void OnDrawGizmos()
+    {
+        // Llamar a la función que verifica si hay un pilar encima
+        VerificarPilarEncima();
+
+        // Definir el color del Gizmo
+        Gizmos.color = Color.red;
+
+        // Dibujar un círculo en la posición del pilar para visualizar la zona de verificación
+        Gizmos.DrawWireSphere(transform.position + Vector3.up * 1.0f, 0.2f);
     }
 
     public void Romper()
@@ -96,7 +127,6 @@ public class PilarController : MonoBehaviour
     {
         if (contenedorEncima != null)
         {
-            // Aquí puedes reproducir la animación del contenedor y luego hacer que caiga
             contenedorEncima.GetComponent<ContenedorController>()?.Romper();
         }
 
@@ -105,6 +135,6 @@ public class PilarController : MonoBehaviour
             Destroy(plataformaEncima);
         }
 
-        Destroy(gameObject); // destruir el Pilar
+        Destroy(gameObject); // Destruir el Pilar
     }
 }

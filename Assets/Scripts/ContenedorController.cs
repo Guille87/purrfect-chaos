@@ -43,5 +43,30 @@ public class ContenedorController : MonoBehaviour
     {
         // Desactivamos el objeto atrapado
         objetivo.SetActive(false);
+        
+        if (objetivo.CompareTag("Player"))
+        {
+            StartCoroutine(ReiniciarJuegoConRetraso());
+        }
+    }
+
+    private IEnumerator ReiniciarJuegoConRetraso()
+    {
+        yield return new WaitForSeconds(3f);  // Esperamos 3 segundos
+
+        // Restamos una vida al jugador
+        GameManager.Instance.PerderVida();
+        
+        // Verificamos si el jugador se queda sin vidas
+        if (GameManager.Instance.Vidas <= 0)
+        {
+            // Si no tiene más vidas, mostramos Game Over
+            GameManager.Instance.GameOver();
+        }
+        else
+        {
+            // Si aún le quedan vidas, reiniciamos la escena
+            GameManager.Instance.ReiniciarJuego();
+        }
     }
 }
