@@ -10,11 +10,36 @@ public class MenuController : MonoBehaviour
     public TextMeshProUGUI salirText;
     public TextMeshProUGUI selectorText;
 
+    [Header("Paneles Opciones")]
+    public CanvasGroup panelMenuPrincipal;
+    public CanvasGroup panelOpciones;
+
+    [Header("Opciones UI")]
+    public TextMeshProUGUI musicaText;
+    public TextMeshProUGUI fxText;
+    public TextMeshProUGUI volverText;
+    public Slider musicaSlider;
+    public Slider fxSlider;
+
+    [Header("Audio")]
+    public AudioClip musicaMenu;
+
+    [Header("SFX")]
+    public AudioClip sfx_menu_move;
+    public AudioClip sfx_menu_select_in;
+    public AudioClip sfx_menu_select_out;
+    public AudioClip sfx_menu_select_play;
+
     private TextMeshProUGUI[] opcionesTexto;
+    private TextMeshProUGUI[] textosOpciones;
     private int opcionSeleccionada;
+    private bool enOpciones = false;
+    private int opcionOpcionesSeleccionada = 0;
 
     private Vector2 posicionBaseSelector = new Vector2(50, -370);
     private float separacionY = -120f;
+    private Vector2 posicionBaseSelectorOpciones = new Vector2(50, -370); // Ajusta según tu layout
+    private float separacionYOpciones = -120f;
 
     private InputSystem_Actions controls;
 
@@ -29,8 +54,21 @@ public class MenuController : MonoBehaviour
 
     void Start()
     {
+        // Cargar valores guardados (o por defecto 0.5)
+        float savedMusicVolume = PlayerPrefs.GetFloat("MusicVolume", 0.5f);
+        float savedSFXVolume = PlayerPrefs.GetFloat("SFXVolume", 0.5f);
+
+        musicaSlider.value = savedMusicVolume * 10f; // Escala de 0 a 10
+        fxSlider.value = savedSFXVolume * 10f;
+
+        if (musicaMenu != null)
+        {
+            AudioManager.PlayMusic(musicaMenu, musicaSlider.value / 10f); // Normalizado
+        }
+
         // Añadir todos los textos de opciones al array
         opcionesTexto = new TextMeshProUGUI[] { jugarText, opcionesText, salirText };
+        textosOpciones = new TextMeshProUGUI[] { musicaText, fxText, volverText };
 
         // Hacer que la primera opción esté seleccionada al inicio
         opcionSeleccionada = 0;
@@ -55,31 +93,41 @@ public class MenuController : MonoBehaviour
 
     private void NavegarMenu(Vector2 direccion)
     {
-        // Detectar si la dirección es hacia arriba o hacia abajo
-        if (direccion.y > 0) // Arriba
+        if (!enOpciones)
         {
-            CambiarSeleccion(-1);
+            // Menú principal
+            if (direccion.y > 0) CambiarSeleccion(-1);
+            else if (direccion.y < 0) CambiarSeleccion(1);
         }
-        else if (direccion.y < 0) // Abajo
+        else
         {
-            CambiarSeleccion(1);
+            // Menú de opciones
+            if (direccion.y > 0) CambiarSeleccionOpciones(-1);
+            else if (direccion.y < 0) CambiarSeleccionOpciones(1);
+            else if (direccion.x != 0)
+            {
+                // Ajuste del slider
+                AjustarSlider(direccion.x);
+            }
         }
     }
 
     private void Seleccionar()
     {
-        // Acción de selección (simula el click del botón)
-        if (opcionSeleccionada == 0)
+        if (enOpciones)
         {
-            Jugar();
+            if (opcionOpcionesSeleccionada == 2) // Volver
+            {
+                VolverDelMenuOpciones();
+            }
+            return;
         }
-        else if (opcionSeleccionada == 1)
+        
+        switch (opcionSeleccionada)
         {
-            Opciones();
-        }
-        else if (opcionSeleccionada == 2)
-        {
-            Salir();
+            case 0: Jugar(); break;
+            case 1: Opciones(); break;
+            case 2: Salir(); break;
         }
     }
 
@@ -93,9 +141,65 @@ public class MenuController : MonoBehaviour
             opcionSeleccionada = opcionesTexto.Length - 1;
         if (opcionSeleccionada >= opcionesTexto.Length)
             opcionSeleccionada = 0;
+        
+        AudioManager.PlaySound(sfx_menu_move);
 
         // Actualizar el símbolo de selección
         UpdateSelectorText();
+    }
+
+    private void CambiarSeleccionOpciones(int direccion)
+    {
+        opcionOpcionesSeleccionada += direccion;
+
+        if (opcionOpcionesSeleccionada < 0)
+            opcionOpcionesSeleccionada = textosOpciones.Length - 1;
+        if (opcionOpcionesSeleccionada >= textosOpciones.Length)
+            opcionOpcionesSeleccionada = 0;
+        
+        AudioManager.PlaySound(sfx_menu_move);
+
+        UpdateSeleccionOpciones();
+    }
+
+    private void UpdateSeleccionOpciones()
+    {
+        ColorUtility.TryParseHtmlString("#98FF98", out Color baseColor);
+
+        for (int i = 0; i < textosOpciones.Length; i++)
+        {
+            textosOpciones[i].color = (i == opcionOpcionesSeleccionada) ? Color.yellow : baseColor;
+        }
+
+        // Mover el selector
+        Vector2 nuevaPosicion = posicionBaseSelectorOpciones + new Vector2(0, separacionYOpciones * opcionOpcionesSeleccionada);
+        selectorText.rectTransform.anchoredPosition = nuevaPosicion;
+    }
+
+    private void AjustarSlider(float direccionX)
+    {
+        float paso = 1f;
+
+        if (opcionOpcionesSeleccionada == 0) // Música
+        {
+            musicaSlider.value = Mathf.Clamp(musicaSlider.value + paso * Mathf.Sign(direccionX), 0, 10);
+            float normalizedVolume = musicaSlider.value / 10f;
+            AudioManager.SetMusicVolume(normalizedVolume);
+            PlayerPrefs.SetFloat("MusicVolume", normalizedVolume);
+        }
+        else if (opcionOpcionesSeleccionada == 1) // FX
+        {
+            fxSlider.value = Mathf.Clamp(fxSlider.value + paso * Mathf.Sign(direccionX), 0, 10);
+            float normalizedVolume = fxSlider.value / 10f;
+            AudioManager.SetSFXVolume(normalizedVolume);
+            PlayerPrefs.SetFloat("SFXVolume", normalizedVolume);
+
+            // Reproducir el sonido de navegación con el nuevo volumen de FX
+            AudioManager.PlaySound(sfx_menu_move);
+        }
+
+        PlayerPrefs.Save(); // Guardar los cambios
+        Debug.Log($"Volumen Música: {musicaSlider.value / 10f}, Volumen FX: {fxSlider.value / 10f}");
     }
 
     private void UpdateSelectorText()
@@ -127,6 +231,8 @@ public class MenuController : MonoBehaviour
 
     private void Jugar()
     {
+        AudioManager.PlaySound(sfx_menu_select_play);
+
         // Desactivar el action map del menú
         controls.Menu.Disable();
 
@@ -147,14 +253,48 @@ public class MenuController : MonoBehaviour
 
     private void Opciones()
     {
-        // Abrir las opciones
-        Debug.Log("Abrir opciones");
+        enOpciones = true;
+
+        AudioManager.PlaySound(sfx_menu_select_in);
+        
+        // Panel de opciones visible
+        panelOpciones.alpha = 1f;
+        panelOpciones.interactable = true;
+        panelOpciones.blocksRaycasts = true;
+
+        // Panel principal oculto
+        panelMenuPrincipal.alpha = 0f;
+        panelMenuPrincipal.interactable = false;
+        panelMenuPrincipal.blocksRaycasts = false;
+
+        opcionOpcionesSeleccionada = 0;
+        UpdateSeleccionOpciones();
+    }
+
+    private void VolverDelMenuOpciones()
+    {
+        AudioManager.PlaySound(sfx_menu_select_out);
+
+        enOpciones = false;
+
+        // Panel principal visible
+        panelMenuPrincipal.alpha = 1f;
+        panelMenuPrincipal.interactable = true;
+        panelMenuPrincipal.blocksRaycasts = true;
+
+        // Panel de opciones oculto
+        panelOpciones.alpha = 0f;
+        panelOpciones.interactable = false;
+        panelOpciones.blocksRaycasts = false;
+
+        // Volvemos a dejar la opción seleccionada resaltada
+        UpdateSelectorText();
     }
 
     private void Salir()
     {
+        AudioManager.PlaySound(sfx_menu_select_out);
         // Salir del juego
-        Debug.Log("Salir del juego");
         Application.Quit();
     }
 }
