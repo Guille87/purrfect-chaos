@@ -298,3 +298,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c9c3c864630b7954b9b7761ef8eeb1f8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  fallingSound: {fileID: 8300000, guid: f8fa9bf3e83262042829c8efa89f6847, type: 3}

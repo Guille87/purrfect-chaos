@@ -23,6 +23,17 @@ public class PlayerController : MonoBehaviour
     public LayerMask pillarLayer;
     public LayerMask breakableLayer;
     public bool IsDead => isDead;
+
+    [Header("Audio")]
+    public AudioSource audioSource;
+    public AudioClip footstepsSound;
+    public AudioClip ropeSlideSound;
+    public AudioClip fallingSound;
+    
+    private bool isPlayingFootsteps = false;
+    private bool isPlayingropeSlideSound = false;
+    private bool isFalling = false;
+    private float fallDuration = 0f;
     bool hasBeenHit = false;
 
     void Awake()
@@ -34,6 +45,7 @@ public class PlayerController : MonoBehaviour
 
     void Start()
     {
+        playerInput.enabled = false; // Desactivar el PlayerInput al inicio
         StartCoroutine(WaitForIntro());
     }
 
@@ -42,7 +54,7 @@ public class PlayerController : MonoBehaviour
         Time.timeScale = 0f;
         yield return new WaitForSecondsRealtime(3f);
         Time.timeScale = 1f;
-
+        playerInput.enabled = true; // Activar el PlayerInput después de la intro
     }
 
     void OnEnable()
@@ -117,6 +129,9 @@ public class PlayerController : MonoBehaviour
                         return;
                     }
                 }
+
+                // Reproducir sonido de deslizamiento por la cuerda si no está ya reproduciéndose
+                StartRopeSlideSound();
                 
                 gameObject.layer = LayerMask.NameToLayer("PlayerClimbing");
                 rb.linearVelocity = new Vector2(0, moveInput.y * speed);
@@ -127,6 +142,9 @@ public class PlayerController : MonoBehaviour
             }
             else if (moveInput.x != 0)
             {
+                // Reproducir sonido de deslizamiento por la cuerda si no está ya reproduciéndose
+                StartRopeSlideSound();
+                
                 gameObject.layer = LayerMask.NameToLayer("Player");
                 rb.linearVelocity = new Vector2(moveInput.x * speed, 0);
                 animator.SetBool("isRunning", true);
@@ -135,6 +153,9 @@ public class PlayerController : MonoBehaviour
             }
             else
             {
+                // Detener el sonido de deslizamiento por la cuerda si el jugador no se está moviendo
+                StopRopeSlideSound();
+
                 rb.linearVelocity = Vector2.zero;
                 animator.SetBool("isClimbingIdle", true);
                 animator.SetBool("isClimbing", false);
@@ -148,6 +169,9 @@ public class PlayerController : MonoBehaviour
                 gameObject.layer = LayerMask.NameToLayer("Player");
                 rb.gravityScale = 1;
             }
+            StopFootsteps(); // Detener el sonido de pasos si está escalando
+            StopFallingSound(); // Detener el sonido de caída si está escalando
+            Debug.Log("Falling sound stopped");
         }
         // Si está tocando la cuerda pero aún no está escalando, permitirlo
         else if (isTouchingRope && moveInput.y != 0)
@@ -189,12 +213,21 @@ public class PlayerController : MonoBehaviour
             {
                 rb.linearVelocity = new Vector2(moveInput.x * speed, rb.linearVelocity.y);
                 animator.SetBool("isRunning", true);
+
+                // Reproducir sonido de pasos si no está ya reproduciéndose
+                StartFootsteps();
             }
             else
             {
                 rb.linearVelocity = new Vector2(0, rb.linearVelocity.y);
                 animator.SetBool("isRunning", false);
+
+                // Detener el sonido de los pasos si el jugador no se está moviendo
+                StopFootsteps();
             }
+            StopRopeSlideSound(); // Detener el sonido de deslizamiento por la cuerda si el jugador está en el suelo
+            StopFallingSound(); // Detener el sonido de caída si el jugador está en el suelo
+            Debug.Log("Falling sound stopped");
         }
         // Movimiento en el aire
         else
@@ -205,6 +238,17 @@ public class PlayerController : MonoBehaviour
             rb.linearVelocity = new Vector2(0, rb.linearVelocity.y);
 
             animator.SetBool("isRunning", false);
+
+            StartFallingSound();
+            
+            if (isFalling)
+            {
+                fallDuration += Time.deltaTime;
+            }
+
+            // Detener el sonido de los pasos si el jugador está en el aire
+            StopFootsteps();
+            StopRopeSlideSound();
         }
 
         // Girar sprite según dirección
@@ -257,6 +301,71 @@ public class PlayerController : MonoBehaviour
                     transform.position.z
                 );
             }
+        }
+    }
+
+    private void StartFootsteps()
+    {
+        if (audioSource != null && footstepsSound != null && !audioSource.isPlaying && !isPlayingFootsteps)
+        {
+            audioSource.clip = footstepsSound;
+            audioSource.loop = true;
+            audioSource.volume = PlayerPrefs.GetFloat("SFXVolume", 0.5f);
+            audioSource.Play();
+            isPlayingFootsteps = true;
+        }
+    }
+
+    private void StopFootsteps()
+    {
+        if (audioSource != null && audioSource.isPlaying && isPlayingFootsteps)
+        {
+            audioSource.Stop();
+            isPlayingFootsteps = false;
+        }
+    }
+
+    private void StartRopeSlideSound()
+    {
+        if (audioSource != null && footstepsSound != null && !audioSource.isPlaying && !isPlayingropeSlideSound)
+        {
+            audioSource.clip = ropeSlideSound;
+            audioSource.loop = true;
+            audioSource.volume = PlayerPrefs.GetFloat("SFXVolume", 0.5f);
+            audioSource.Play();
+            isPlayingropeSlideSound = true;
+        }
+    }
+
+    private void StopRopeSlideSound()
+    {
+        if (audioSource != null && audioSource.isPlaying && isPlayingropeSlideSound)
+        {
+            audioSource.Stop();
+            isPlayingropeSlideSound = false;
+        }
+    }
+
+    private void StartFallingSound()
+    {
+        if (audioSource != null && fallingSound != null && !audioSource.isPlaying && !isFalling)
+        {
+            Debug.Log("Falling sound started");
+            audioSource.clip = fallingSound;
+            audioSource.loop = false;
+            audioSource.volume = PlayerPrefs.GetFloat("SFXVolume", 0.5f);
+            audioSource.Play();
+            isFalling = true;
+            fallDuration = 0f;  // Reiniciar el contador de la duración de la caída
+        }
+    }
+
+    private void StopFallingSound()
+    {
+        if (audioSource != null && audioSource.isPlaying && isFalling)
+        {
+            audioSource.Stop();
+            isFalling = false;
         }
     }
 
@@ -315,16 +424,12 @@ public class PlayerController : MonoBehaviour
         moveInput = lockedDirection;
     }
 
-    void OnPause(InputAction.CallbackContext context)
-    {
-        // Lógica de pausa: activar un panel de pausa y cambiar el timescale
-        Debug.Log("Pausa activada");
-    }
-
     void OnAttack(InputAction.CallbackContext context)
     {
         if (!isDead && !isAttacking && !isClimbing && isGrounded)
         {
+            StopFootsteps(); // Detener el sonido de los pasos al atacar
+            
             isAttacking = true;
             rb.linearVelocity = Vector2.zero;
             animator.SetTrigger("isAttacking");
@@ -385,6 +490,17 @@ public class PlayerController : MonoBehaviour
         GameManager.Instance.PerderVida();
         
         StartCoroutine(DeathSequence());
+    }
+
+    void OnPause(InputAction.CallbackContext context)
+    {
+        if (context.performed && !isDead)
+        {
+            StopFootsteps(); // Detener el sonido de los pasos al pausar
+            StopRopeSlideSound(); // Detener el sonido de deslizamiento por la cuerda al pausar
+            
+            GameManager.Instance.TogglePause();
+        }
     }
 
     private IEnumerator DeathSequence()

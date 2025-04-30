@@ -181,6 +181,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b7e26a3803bf8124dbdf95c4b55cafeb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  sfxRomperPilar: {fileID: 8300000, guid: 9c69df0f13e7ffc47a7e595277fb0875, type: 3}
 --- !u!95 &818007101205224142
 Animator:
   serializedVersion: 7

@@ -8,15 +8,24 @@ public class GameManager : MonoBehaviour
     public static GameManager Instance;
 
     [Header("UI")]
-    public TextMeshProUGUI vidasText;
-    public TextMeshProUGUI puntosText;
-    public GameObject gameOverPanel;
     public UIController uiController;
+
+    private GameObject gameOverPanel;
+    private TextMeshProUGUI vidasText;
+    private TextMeshProUGUI puntosText;
 
     [Header("Gameplay")]
     public int vidasIniciales = 3;
-    public int puntuacionVidaExtra = 5000;
+    public int puntuacionVidaExtra = 2500;
     public int maxVidas = 9;
+
+    [Header("Audio")]
+    public AudioClip stagesLoop;
+    public AudioClip sfxLevelUp;
+    public AudioClip sfxLoseLife;
+
+    [Header("Pausa")]
+    [SerializeField] private PauseManager pauseManager;
 
     [SerializeField] private List<string> escenasJugables;
     private List<VasoController> vasosEnNivel = new List<VasoController>();
@@ -59,6 +68,18 @@ public class GameManager : MonoBehaviour
             vasosEnNivel.Clear();
             vasosEnNivel.AddRange(FindObjectsByType<VasoController>(FindObjectsSortMode.None));
 
+            pauseManager = FindFirstObjectByType<PauseManager>();
+
+            if (stagesLoop != null)
+            {
+                float volume = PlayerPrefs.GetFloat("MusicVolume", 0.5f);
+                AudioManager.PlayMusic(stagesLoop, volume);
+            }
+            else
+            {
+                Debug.LogWarning("El clip de música 'stagesLoop' no está asignado en el GameManager.");
+            }
+
             OcultarGameOverPanel();
 
             ActualizarUI();
@@ -99,6 +120,12 @@ public class GameManager : MonoBehaviour
         {
             vidas++;
             proximaVidaExtra += puntuacionVidaExtra;
+
+            if (sfxLevelUp != null)
+            {
+                float volume = PlayerPrefs.GetFloat("SFXVolume", 0.5f);
+                AudioManager.PlaySound(sfxLevelUp, volume);
+            }
         }
 
         ActualizarUI();
@@ -109,6 +136,12 @@ public class GameManager : MonoBehaviour
         if (vidas <= 0) return;
 
         vidas--;
+
+        if (sfxLoseLife != null)
+        {
+            float volume = PlayerPrefs.GetFloat("SFXVolume", 0.5f);
+            AudioManager.PlaySound(sfxLoseLife, volume);
+        }
 
         // Guardar las nuevas vidas y puntos
         PlayerPrefs.SetInt("Vidas", vidas);
@@ -171,6 +204,14 @@ public class GameManager : MonoBehaviour
     {
         vidas = 3;
         puntos = 0;
+    }
+
+    public void TogglePause()
+    {
+        if (pauseManager != null)
+        {
+            pauseManager.TogglePause();
+        }
     }
 
     public void ReiniciarJuego()

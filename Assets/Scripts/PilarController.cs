@@ -1,9 +1,10 @@
-using System.Collections;
 using UnityEngine;
 
 [ExecuteInEditMode] // Permite que el script se ejecute en el modo de edición en Unity
 public class PilarController : MonoBehaviour
 {
+    public AudioClip sfxRomperPilar;
+    
     private Animator animator;
     private GameObject plataformaEncima;
     private GameObject contenedorEncima;
@@ -119,6 +120,11 @@ public class PilarController : MonoBehaviour
     {
         if (roto) return;
         roto = true;
+
+        if (sfxRomperPilar != null)
+        {
+            AudioManager.PlaySound(sfxRomperPilar);
+        }
 
         animator.SetTrigger("Romper"); // Pilar_Rotura
     }

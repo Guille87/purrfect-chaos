@@ -8,6 +8,7 @@ public class ContenedorController : MonoBehaviour
     private float distanciaCaida = 1f;  // Distancia que se mueve en cada caída
 
     public bool SeEstaCayendo { get; private set; } = false;
+    public AudioClip fallingSound;
 
     private void Awake()
     {
@@ -23,6 +24,11 @@ public class ContenedorController : MonoBehaviour
     private IEnumerator Caer()
     {
         yield return new WaitForSeconds(0.5f);  // Espera un poco antes de iniciar la caída
+
+        if (fallingSound != null)
+        {
+            AudioManager.PlaySoundWithPitch(fallingSound, 0.5f, 2.25f); // Reproducir sonido de caída con un rango de pitch
+        }
 
         SeEstaCayendo = true;  // Marcamos que el contenedor se está cayendo
 

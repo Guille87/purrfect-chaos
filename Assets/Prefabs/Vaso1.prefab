@@ -151,6 +151,8 @@ MonoBehaviour:
   tipoVaso: 0
   grieta1: {fileID: 0}
   grieta2: {fileID: 0}
+  sfxGolpe: {fileID: 0}
+  sfxRomper: {fileID: 8300000, guid: 25140bcb3ebb0fa4bacccddcf8dc0c05, type: 3}
 --- !u!95 &-969981654415129034
 Animator:
   serializedVersion: 7
