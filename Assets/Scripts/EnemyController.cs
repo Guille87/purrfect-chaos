@@ -20,6 +20,11 @@ public class EnemyController : MonoBehaviour
     private int defaultLayer;
     private int ignorePlatformLayer;
 
+    private Vector2 lastPosition;
+    private float stuckTime = 0f;
+    private float stuckCheckInterval = 0.05f;
+    private float stuckThreshold = 0.01f;
+
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
@@ -29,6 +34,8 @@ public class EnemyController : MonoBehaviour
 
         defaultLayer = gameObject.layer;
         ignorePlatformLayer = LayerMask.NameToLayer("EnemyIgnorePlatform");
+
+        lastPosition = transform.position;
     }
 
     void Update()
@@ -86,6 +93,21 @@ public class EnemyController : MonoBehaviour
         {
             TryDownToRopeBelow();
         }
+
+        stuckTime += Time.deltaTime;
+        if (stuckTime >= stuckCheckInterval)
+        {
+            float distanceMoved = Mathf.Abs(transform.position.x - lastPosition.x);
+            if (distanceMoved < stuckThreshold)
+            {
+                // Cambiar dirección si casi no se movió
+                moveDirection *= -1;
+                if (flipSprite)
+                    spriteRenderer.flipX = moveDirection < 0;
+            }
+            lastPosition = transform.position;
+            stuckTime = 0f;
+        }
     }
 
     void TryFlipTowardsPlayer()
@@ -132,7 +154,7 @@ public class EnemyController : MonoBehaviour
             gameObject.layer = ignorePlatformLayer;
             rb.gravityScale = 0f;
             rb.linearVelocity = new Vector2(0f, -speed);
-            ChangeAnimation("EnemigoPerro1Climb");
+            UpdateAnimation();
         }
     }
 
@@ -188,9 +210,13 @@ public class EnemyController : MonoBehaviour
         {
             ChangeAnimation("EnemigoPerro1Climb");
         }
+        else if (Mathf.Abs(rb.linearVelocity.x) > 0.1f)
+        {
+            ChangeAnimation("EnemigoPerro1Run");
+        }
         else
         {
-            ChangeAnimation(Mathf.Abs(moveDirection) > 0.1f ? "EnemigoPerro1Run" : "EnemigoPerro1Idle");
+            ChangeAnimation("EnemigoPerro1Idle");
         }
     }
 
