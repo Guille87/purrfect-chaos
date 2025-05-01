@@ -401,6 +401,17 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": """",
+                    ""id"": ""de108700-5ff7-45ac-9e39-7fea70eb08ea"",
+                    ""path"": ""<Gamepad>/buttonSouth"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Gamepad"",
+                    ""action"": ""Submit"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
                     ""id"": ""4016dce6-45d1-42e7-b380-2d0c2b456029"",
                     ""path"": ""<Keyboard>/enter"",
                     ""interactions"": """",
@@ -423,11 +434,11 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": """",
-                    ""id"": ""de108700-5ff7-45ac-9e39-7fea70eb08ea"",
-                    ""path"": ""<Gamepad>/buttonSouth"",
+                    ""id"": ""307fd747-bcc5-4bec-a466-8334d74dc5c6"",
+                    ""path"": ""<Keyboard>/z"",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": "";Gamepad"",
+                    ""groups"": ""Keyboard&Mouse"",
                     ""action"": ""Submit"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
