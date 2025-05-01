@@ -38,7 +38,7 @@ public class MenuController : MonoBehaviour
 
     private Vector2 posicionBaseSelector = new Vector2(50, -370);
     private float separacionY = -120f;
-    private Vector2 posicionBaseSelectorOpciones = new Vector2(50, -370); // Ajusta según tu layout
+    private Vector2 posicionBaseSelectorOpciones = new Vector2(50, -370);
     private float separacionYOpciones = -120f;
 
     private InputSystem_Actions controls;
@@ -50,6 +50,8 @@ public class MenuController : MonoBehaviour
 
         // Activar las acciones del menú
         controls.Menu.Enable();
+
+        AudioListener.pause = false; // Asegurarse de que el audio no esté pausado
     }
 
     void Start()

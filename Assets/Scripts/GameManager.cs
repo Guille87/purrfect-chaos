@@ -1,15 +1,15 @@
+using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.SocialPlatforms;
 
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance;
 
-    [Header("UI")]
-    public UIController uiController;
-
+    private UIController uiController;
     private GameObject gameOverPanel;
     private TextMeshProUGUI vidasText;
     private TextMeshProUGUI puntosText;
@@ -23,6 +23,9 @@ public class GameManager : MonoBehaviour
     public AudioClip stagesLoop;
     public AudioClip sfxLevelUp;
     public AudioClip sfxLoseLife;
+    public AudioClip musicGameOver;
+    public AudioClip Victory;
+    public AudioClip musicCredits;
 
     [Header("Pausa")]
     [SerializeField] private PauseManager pauseManager;
@@ -33,6 +36,7 @@ public class GameManager : MonoBehaviour
     private int vidas;
     private int puntos;
     private int proximaVidaExtra;
+    private bool enTransicion = false; // Para evitar reinicios de música
 
     public int Vidas => vidas; // Propiedad para acceder a las vidas desde otros scripts
 
@@ -52,6 +56,24 @@ public class GameManager : MonoBehaviour
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
+        // Si estamos en el menu principal, destruir el GameManager existente.
+        if (scene.name == "MenuPrincipal" && Instance != null)
+        {
+            Destroy(Instance.gameObject);  // Elimina el GameManager de la escena de menú
+            Instance = null;
+        }
+
+        // Si estamos en la escena final de créditos
+        if (scene.name == "GameCompleted")
+        {
+            if (musicCredits != null)
+            {
+                float volume = PlayerPrefs.GetFloat("MusicVolume", 0.5f);
+                AudioManager.PlayMusic(musicCredits, volume);
+            }
+            return; // Salir sin hacer lo de escenas jugables
+        }
+        
         // Solo buscar los elementos de UI si estamos en la escena de juego
         if (escenasJugables.Contains(scene.name))
         {
@@ -70,7 +92,7 @@ public class GameManager : MonoBehaviour
 
             pauseManager = FindFirstObjectByType<PauseManager>();
 
-            if (stagesLoop != null)
+            if (stagesLoop != null && !enTransicion)
             {
                 float volume = PlayerPrefs.GetFloat("MusicVolume", 0.5f);
                 AudioManager.PlayMusic(stagesLoop, volume);
@@ -131,13 +153,13 @@ public class GameManager : MonoBehaviour
         ActualizarUI();
     }
 
-    public void PerderVida()
+    public void PerderVida(bool reproducirSonido = true)
     {
         if (vidas <= 0) return;
 
         vidas--;
 
-        if (sfxLoseLife != null)
+        if (reproducirSonido && sfxLoseLife != null)
         {
             float volume = PlayerPrefs.GetFloat("SFXVolume", 0.5f);
             AudioManager.PlaySound(sfxLoseLife, volume);
@@ -153,8 +175,11 @@ public class GameManager : MonoBehaviour
 
     private void ActualizarUI()
     {
-        vidasText.text = "Vidas: " + vidas;
-        puntosText.text = "Puntos: " + puntos;
+        if (vidasText != null)
+            vidasText.text = "Vidas: " + vidas;
+        
+        if (puntosText != null)
+            puntosText.text = "Puntos: " + puntos;
     }
 
     public void VasoRoto(VasoController vaso)
@@ -170,8 +195,27 @@ public class GameManager : MonoBehaviour
 
         if (vasosEnNivel.Count == 0)
         {
-            PasarAlSiguienteNivel();
+            StartCoroutine(EsperarYPasarNivel());
         }
+    }
+
+    private IEnumerator EsperarYPasarNivel()
+    {
+        enTransicion = true;
+        
+        if (Victory != null)
+        {
+            float volume = PlayerPrefs.GetFloat("MusicVolume", 0.5f);
+            AudioManager.PlayMusic(Victory, volume, loop: false);
+        }
+
+        Time.timeScale = 0f;
+        yield return new WaitForSecondsRealtime(Victory.length); // Esperar a que termine la música
+        Time.timeScale = 1f;
+
+        PasarAlSiguienteNivel();
+
+        enTransicion = false;
     }
 
     private void PasarAlSiguienteNivel()
@@ -204,6 +248,10 @@ public class GameManager : MonoBehaviour
     {
         vidas = 3;
         puntos = 0;
+        
+        PlayerPrefs.SetInt("Vidas", vidas);
+        PlayerPrefs.SetInt("Puntos", puntos);
+        PlayerPrefs.Save();
     }
 
     public void TogglePause()
@@ -259,6 +307,13 @@ public class GameManager : MonoBehaviour
         {
             MostrarGameOverPanel();
         }
+
+        if (musicGameOver != null)
+        {
+            float volume = PlayerPrefs.GetFloat("MusicVolume", 0.5f);
+            AudioManager.PlayMusic(musicGameOver, volume);
+        }
+
         Time.timeScale = 0f;
     }
 }

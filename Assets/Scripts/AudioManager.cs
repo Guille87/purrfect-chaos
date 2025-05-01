@@ -50,11 +50,12 @@ public class AudioManager : MonoBehaviour
         }
     }
 
-    public static void PlayMusic(AudioClip clip, float volume = 0.5f)
+    public static void PlayMusic(AudioClip clip, float volume = 0.5f, bool loop = true)
     {
         Debug.Log($"Reproduciendo música: {clip.name} a volumen: {volume}");
         if (instance != null && clip != null)
         {
+            instance.musicSource.loop = loop;
             instance.musicSource.clip = clip;
             instance.musicSource.volume = volume;
             instance.musicSource.Play();

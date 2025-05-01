@@ -8,7 +8,10 @@ public class ContenedorController : MonoBehaviour
     private float distanciaCaida = 1f;  // Distancia que se mueve en cada caída
 
     public bool SeEstaCayendo { get; private set; } = false;
+
+    [Header("Audio")]
     public AudioClip fallingSound;
+    public AudioClip loseLifeSound;
 
     private void Awake()
     {
@@ -52,7 +55,19 @@ public class ContenedorController : MonoBehaviour
         
         if (objetivo.CompareTag("Player"))
         {
+            StartCoroutine(EsperarYSonarPerderVida());
             StartCoroutine(ReiniciarJuegoConRetraso());
+        }
+    }
+
+    private IEnumerator EsperarYSonarPerderVida()
+    {
+        yield return new WaitForSeconds(0.5f); // Espera 0.5 segundos
+
+        if (loseLifeSound != null)
+        {
+            AudioManager.PlaySound(loseLifeSound, 0.5f);
+            Debug.Log("Sonido de perder vida reproducido.");
         }
     }
 
@@ -61,7 +76,7 @@ public class ContenedorController : MonoBehaviour
         yield return new WaitForSeconds(3f);  // Esperamos 3 segundos
 
         // Restamos una vida al jugador
-        GameManager.Instance.PerderVida();
+        GameManager.Instance.PerderVida(false);
         
         // Verificamos si el jugador se queda sin vidas
         if (GameManager.Instance.Vidas <= 0)

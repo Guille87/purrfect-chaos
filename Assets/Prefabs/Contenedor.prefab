@@ -299,3 +299,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   fallingSound: {fileID: 8300000, guid: f8fa9bf3e83262042829c8efa89f6847, type: 3}
+  loseLifeSound: {fileID: 8300000, guid: eda2551c129276a40b5e58dfcb7d844e, type: 3}

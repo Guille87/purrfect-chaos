@@ -167,11 +167,14 @@ public class PlayerController : MonoBehaviour
             {
                 isClimbing = false;
                 gameObject.layer = LayerMask.NameToLayer("Player");
+
+                // Detenemos completamente la velocidad vertical para evitar "saltitos"
+                rb.linearVelocity = new Vector2(rb.linearVelocity.x, 0);
+
                 rb.gravityScale = 1;
             }
             StopFootsteps(); // Detener el sonido de pasos si está escalando
             StopFallingSound(); // Detener el sonido de caída si está escalando
-            Debug.Log("Falling sound stopped");
         }
         // Si está tocando la cuerda pero aún no está escalando, permitirlo
         else if (isTouchingRope && moveInput.y != 0)
@@ -227,7 +230,6 @@ public class PlayerController : MonoBehaviour
             }
             StopRopeSlideSound(); // Detener el sonido de deslizamiento por la cuerda si el jugador está en el suelo
             StopFallingSound(); // Detener el sonido de caída si el jugador está en el suelo
-            Debug.Log("Falling sound stopped");
         }
         // Movimiento en el aire
         else
@@ -239,7 +241,10 @@ public class PlayerController : MonoBehaviour
 
             animator.SetBool("isRunning", false);
 
-            StartFallingSound();
+            if (rb.linearVelocity.y < 0)
+            {
+                StartFallingSound();
+            }
             
             if (isFalling)
             {
@@ -350,7 +355,6 @@ public class PlayerController : MonoBehaviour
     {
         if (audioSource != null && fallingSound != null && !audioSource.isPlaying && !isFalling)
         {
-            Debug.Log("Falling sound started");
             audioSource.clip = fallingSound;
             audioSource.loop = false;
             audioSource.volume = PlayerPrefs.GetFloat("SFXVolume", 0.5f);
@@ -474,6 +478,10 @@ public class PlayerController : MonoBehaviour
 
     public void OnDeath()
     {
+        StopFootsteps(); // Detener el sonido de los pasos al morir
+        StopRopeSlideSound(); // Detener el sonido de deslizamiento por la cuerda al morir
+        StopFallingSound(); // Detener el sonido de caída al morir
+        
         isDead = true;
         gameObject.layer = LayerMask.NameToLayer("Dead");
         // Desactivar colisiones

@@ -1,8 +1,13 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class PauseManager : MonoBehaviour
 {
     public CanvasGroup pauseCanvasGroup;
+    public PauseMenuController pauseMenuController;
+    public PlayerInput playerInput;
+
+    [Header("Audio Clips")]
     public AudioClip pauseInClip;
     public AudioClip pauseOutClip;
 
@@ -11,6 +16,12 @@ public class PauseManager : MonoBehaviour
     private void Start()
     {
         HidePauseMenu();
+    }
+
+    private void OnEnable()
+    {
+        if (!playerInput.enabled)
+            playerInput.enabled = true;
     }
 
     public void TogglePause()
@@ -33,6 +44,8 @@ public class PauseManager : MonoBehaviour
             isPaused = true;
             ShowPauseMenu();
             
+            playerInput.SwitchCurrentActionMap("Menu");
+            
             // Reproducir el sonido de pausa
             if (pauseInClip != null)
             {
@@ -52,6 +65,8 @@ public class PauseManager : MonoBehaviour
             isPaused = false;
             HidePauseMenu();
 
+            playerInput.SwitchCurrentActionMap("Player");
+
             // Reproducir el sonido de reanudación
             if (pauseOutClip != null)
             {
@@ -70,6 +85,11 @@ public class PauseManager : MonoBehaviour
             pauseCanvasGroup.alpha = 1f;
             pauseCanvasGroup.interactable = true;
             pauseCanvasGroup.blocksRaycasts = true;
+        }
+
+        if (pauseMenuController != null)
+        {
+            pauseMenuController.MostrarMenuPrincipal();
         }
     }
 
