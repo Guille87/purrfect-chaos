@@ -30,7 +30,8 @@ public class ContenedorController : MonoBehaviour
 
         if (fallingSound != null)
         {
-            AudioManager.PlaySoundWithPitch(fallingSound, 0.5f, 2.25f); // Reproducir sonido de caída con un rango de pitch
+            float volume = PlayerPrefs.GetFloat("SFXVolume", 0.5f);
+            AudioManager.PlaySoundWithPitch(fallingSound, volume, 2.25f); // Reproducir sonido de caída con un rango de pitch
         }
 
         SeEstaCayendo = true;  // Marcamos que el contenedor se está cayendo

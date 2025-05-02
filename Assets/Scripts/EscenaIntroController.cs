@@ -60,7 +60,7 @@ public class EscenaIntroController : MonoBehaviour
         {
             // Si es la primera vez, mostramos los controles, cambiamos el color de fondo y damos tiempo al jugador
             MostrarControles();
-            CambiarColorFondo(); // Cambiar el color de fondo
+            CambiarColorFondo();
         }
     }
     private void MostrarControles()
