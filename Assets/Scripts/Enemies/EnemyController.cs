@@ -22,7 +22,7 @@ public class EnemyController : MonoBehaviour
 
     private Vector2 lastPosition;
     private float stuckTime = 0f;
-    private float stuckCheckInterval = 0.05f;
+    private float stuckCheckInterval = 0.25f;
     private float stuckThreshold = 0.01f;
 
     void Start()
@@ -93,21 +93,6 @@ public class EnemyController : MonoBehaviour
         {
             TryDownToRopeBelow();
         }
-
-        stuckTime += Time.deltaTime;
-        if (stuckTime >= stuckCheckInterval)
-        {
-            float distanceMoved = Mathf.Abs(transform.position.x - lastPosition.x);
-            if (distanceMoved < stuckThreshold)
-            {
-                // Cambiar dirección si casi no se movió
-                moveDirection *= -1;
-                if (flipSprite)
-                    spriteRenderer.flipX = moveDirection < 0;
-            }
-            lastPosition = transform.position;
-            stuckTime = 0f;
-        }
     }
 
     void TryFlipTowardsPlayer()
@@ -141,6 +126,21 @@ public class EnemyController : MonoBehaviour
         UpdateAnimation();
         if (flipSprite)
             spriteRenderer.flipX = moveDirection < 0;
+        
+        stuckTime += Time.deltaTime;
+        if (stuckTime >= stuckCheckInterval)
+        {
+            float distanceMoved = Mathf.Abs(transform.position.x - lastPosition.x);
+            if (distanceMoved < stuckThreshold)
+            {
+                // Cambiar dirección si casi no se movió
+                moveDirection *= -1;
+                if (flipSprite)
+                    spriteRenderer.flipX = moveDirection < 0;
+            }
+            lastPosition = transform.position;
+            stuckTime = 0f;
+        }
     }
 
     void TryDownToRopeBelow()
@@ -271,13 +271,13 @@ public class EnemyController : MonoBehaviour
                     float horizontalDistance = Mathf.Abs(contact.point.x - transform.position.x);
 
                     // Si la distancia horizontal es pequeña, significa que el enemigo está cerca del borde de la plataforma
-                    if (horizontalDistance < 0.4f)
+                    if (horizontalDistance < 0.5f)
                     {
                         // Verificamos la diferencia de altura entre el enemigo y la plataforma
                         float heightDifference = Mathf.Abs(transform.position.y - collision.transform.position.y);
 
                         // Si la diferencia de altura es pequeña, ajustamos la posición del enemigo
-                        if (heightDifference < 0.4f) // Margen de corrección para la altura
+                        if (heightDifference < 0.5f) // Margen de corrección para la altura
                         {
                             float platformHeight = collision.transform.position.y + collision.collider.bounds.extents.y;
                             transform.position = new Vector2(transform.position.x, platformHeight);

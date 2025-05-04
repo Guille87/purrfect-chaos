@@ -15,8 +15,8 @@ public class ScreenWrapper : MonoBehaviour
         Vector2 screenBottomLeft = cam.ViewportToWorldPoint(new Vector3(0, 0, cam.nearClipPlane));
         Vector2 screenTopRight = cam.ViewportToWorldPoint(new Vector3(1, 1, cam.nearClipPlane));
 
-        screenLeft = screenBottomLeft.x + 0.5f;
-        screenRight = screenTopRight.x - 0.5f;
+        screenLeft = screenBottomLeft.x + 0.25f;
+        screenRight = screenTopRight.x - 0.25f;
 
         // Obtener el ancho del objeto
         SpriteRenderer sr = GetComponent<SpriteRenderer>();
