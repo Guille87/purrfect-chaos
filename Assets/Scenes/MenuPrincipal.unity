@@ -2346,6 +2346,64 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1680104614}
   m_CullTransparentMesh: 1
+--- !u!1 &1813831472
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1813831474}
+  - component: {fileID: 1813831473}
+  m_Layer: 0
+  m_Name: GameManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1813831473
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1813831472}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 30021974162074d4caf8d1b063ecc239, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  vidasIniciales: 3
+  puntuacionVidaExtra: 5000
+  maxVidas: 9
+  stagesLoop: {fileID: 8300000, guid: 5e1eb84fc852d154594e2d398614ba25, type: 3}
+  sfxLevelUp: {fileID: 8300000, guid: 42f30f5cdf14b2145aaeb25c9e21a1a6, type: 3}
+  sfxLoseLife: {fileID: 8300000, guid: eda2551c129276a40b5e58dfcb7d844e, type: 3}
+  musicGameOver: {fileID: 8300000, guid: 5bd0e0b87c9ab604682f8d8df6ffb6ab, type: 3}
+  Victory: {fileID: 8300000, guid: 72ad30cfcff7fdb46a2247e43a839c32, type: 3}
+  musicCredits: {fileID: 8300000, guid: 1b0409ea03b6e9a40a770a66ccf99805, type: 3}
+  pauseManager: {fileID: 0}
+  escenasJugables:
+  - Level1
+  - Level2
+  - Level3
+--- !u!4 &1813831474
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1813831472}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1852112162
 GameObject:
   m_ObjectHideFlags: 0
@@ -3046,3 +3104,4 @@ SceneRoots:
   - {fileID: 1293609386}
   - {fileID: 1391485692}
   - {fileID: 670611920}
+  - {fileID: 1813831474}

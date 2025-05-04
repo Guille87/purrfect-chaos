@@ -1,2 +1,18 @@
 fileFormatVersion: 2
 guid: 30021974162074d4caf8d1b063ecc239
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - stagesLoop: {instanceID: 0}
+  - sfxLevelUp: {instanceID: 0}
+  - sfxLoseLife: {instanceID: 0}
+  - musicGameOver: {instanceID: 0}
+  - Victory: {instanceID: 0}
+  - musicCredits: {instanceID: 0}
+  - pauseManager: {instanceID: 0}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

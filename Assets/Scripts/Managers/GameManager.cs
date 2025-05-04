@@ -55,13 +55,6 @@ public class GameManager : MonoBehaviour
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        // Si estamos en el menu principal, destruir el GameManager existente.
-        if (scene.name == "MenuPrincipal" && Instance != null)
-        {
-            Destroy(Instance.gameObject);  // Elimina el GameManager de la escena de menú
-            Instance = null;
-        }
-
         // Si estamos en la escena final de créditos
         if (scene.name == "GameCompleted")
         {
@@ -245,12 +238,15 @@ public class GameManager : MonoBehaviour
 
     public void IniciarNuevaPartida()
     {
-        vidas = 3;
+        vidas = vidasIniciales;
         puntos = 0;
         
         PlayerPrefs.SetInt("Vidas", vidas);
         PlayerPrefs.SetInt("Puntos", puntos);
         PlayerPrefs.Save();
+        
+        Debug.Log("Vidas iniciales: " + vidasIniciales);
+        Debug.Log("Vidas cargadas: " + vidas);
     }
 
     public void TogglePause()
